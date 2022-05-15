@@ -29,6 +29,7 @@ public class Health : MonoBehaviour
         {
             currHealth = 0;
             deathEvent.Invoke();
+            Debug.Log("health is 0");
         }
     }
 }

@@ -78,7 +78,8 @@ public class PlayerController : MonoBehaviour
 
     private void KickHit(GameObject hit)
     {
-        ChildController child = hit.GetComponent<ChildController>();
+        Debug.Log("kickhit");
+        ChildController child = hit.GetComponentInParent<ChildController>();
         if (child)
         {
             child.GetComponent<Health>().Damage(100);
