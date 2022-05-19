@@ -13,10 +13,13 @@ public class PlayerController : MonoBehaviour
     [Header("Animation")]
     [SerializeField] string walkAnimName = "moving";
     [SerializeField] string kickAnimName = "kick";
+    [SerializeField] string dirAnimName = "direction";
+
     [SerializeField] GameObject model;
     private Rigidbody2D rb;
     private Animator animator;
     private Trigger kickTrigger;
+    private Health health;
 
     private bool moving;
     private bool kicking;
@@ -32,6 +35,7 @@ public class PlayerController : MonoBehaviour
         animator = GetComponentInChildren<Animator>();
         kickTrigger = GetComponentInChildren<Trigger>();
         kickTrigger.objectEnteredEvent.AddListener(KickHit);
+        health = GetComponent<Health>();
         timeSinceLastKick = Time.time;
     }
 
@@ -47,10 +51,12 @@ public class PlayerController : MonoBehaviour
         }
         if (x < 0 && model.transform.localScale.x > 0)
         {
+            animator.SetInteger(dirAnimName, -1);
             model.transform.localScale = new Vector3(-1, 1, 1);
         }
         else if (x > 0 && model.transform.localScale.x < 0)
         {
+            animator.SetInteger(dirAnimName, 1);
             model.transform.localScale = new Vector3(1, 1, 1);
         }
 
@@ -83,6 +89,10 @@ public class PlayerController : MonoBehaviour
         if (child)
         {
             child.GetComponent<Health>().Damage(100);
+            if (!child.isBad)
+            {
+                health.Damage(1);
+            }
         }
     }
 }

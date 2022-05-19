@@ -22,6 +22,11 @@ public class Health : MonoBehaviour
         
     }
 
+    public bool IsAlive()
+    {
+        return currHealth > 0;
+    }
+
     public void Damage(float damage)
     {
         currHealth -= damage;
@@ -31,5 +36,15 @@ public class Health : MonoBehaviour
             deathEvent.Invoke();
             Debug.Log("health is 0");
         }
+        StartCoroutine(HitAnimation());
+    }
+
+    private IEnumerator HitAnimation()
+    {
+        float flashTime = 0.5f;
+        SpriteRenderer renderer = GetComponentInChildren<SpriteRenderer>();
+        renderer.color = Color.red;
+        yield return new WaitForSecondsRealtime(flashTime);
+        renderer.color = Color.white;
     }
 }

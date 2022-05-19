@@ -35,14 +35,13 @@ public class MoveTowards : MonoBehaviour
                 Pause();
                 destinationReached.Invoke();
             }
-            else if (pause)
+            else if (pause && Time.time - moveTime > moveDelay)
             {
                 Resume();
             }
+
             if (!pause)
             {
-                if (Time.time - moveTime < moveDelay) return;
-
                 Vector3 diff = (target.position - transform.position).normalized * speed;
                 Vector2 dir = new Vector3(diff.x, 0);
 

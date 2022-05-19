@@ -9,9 +9,9 @@ public class ChildController : MonoBehaviour
     public bool isBad;
     public UnityEvent<bool> defeatEvent;
 
-
     private Health health;
     private MoveTowards mover;
+    private Trigger attackTrigger;
 
     private Animator animator;
     private Rigidbody2D rb;
@@ -25,15 +25,19 @@ public class ChildController : MonoBehaviour
         health.deathEvent = new UnityEvent();
         health.deathEvent.AddListener(Defeated);
 
-        rb = GetComponent<Rigidbody2D>();
-        animator = GetComponentInChildren<Animator>();
-        collider = GetComponent<Collider2D>();
-
         PlayerController player = GameObject.FindObjectOfType<PlayerController>();
         mover = GetComponent<MoveTowards>();
         mover.destinationReached = new UnityEvent();
         mover.destinationReached.AddListener(Attack);
         mover.SetTarget(player.transform);
+
+        attackTrigger = GetComponentInChildren<Trigger>();
+        attackTrigger.objectEnteredEvent = new UnityEvent<GameObject>();
+        attackTrigger.objectEnteredEvent.AddListener(TriggerHit);
+
+        rb = GetComponent<Rigidbody2D>();
+        animator = GetComponentInChildren<Animator>();
+        collider = GetComponentInChildren<Collider2D>();
     }
 
     // Update is called once per frame
@@ -88,11 +92,36 @@ public class ChildController : MonoBehaviour
 
     private void Attack()
     {
-        if (!isBad) return;
+        if (!isBad)
+        {
+            // if child is not bad, have it keep walking past vck
+            collider.isTrigger = true;
+            GameObject carrot = new GameObject();
+            carrot.transform.parent = transform;
+            carrot.transform.localPosition = new Vector2(model.transform.localScale.x*5f, 0);
+            mover.SetTarget(carrot.transform);
+        }
+        else if (health.IsAlive())
+        {
+            // TODO: have a delay before child begins attack to give player time to react.
+            // try making the attack animation lower in height so player can kick the head
+            // as well as making the attack from a shorter distance so we don't have to kick
+            // while child is flying at us
+            animator.SetTrigger("attack");
+        }
     }
 
     private void AttackEnd()
     {
         mover.Resume();
+    }
+
+    private void TriggerHit(GameObject hitObject)
+    {
+        PlayerController player = hitObject.GetComponentInParent<PlayerController>();
+        if (player)
+        {
+            player.GetComponent<Health>().Damage(1f);
+        }
     }
 }
