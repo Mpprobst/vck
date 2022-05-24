@@ -15,8 +15,7 @@ public class ChildController : MonoBehaviour
 
     private Animator animator;
     private Rigidbody2D rb;
-    private Collider2D collider;
-
+    private Collider2D collider;d
 
     // Start is called before the first frame update
     void Start()

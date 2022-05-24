@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class PlayerController : MonoBehaviour
 {
@@ -26,7 +27,7 @@ public class PlayerController : MonoBehaviour
 
     private float timeSinceLastKick;
     private float kickDelay = 0.5f;
-
+    private Vector3 startPos;
 
     // Start is called before the first frame update
     void Start()
@@ -36,7 +37,11 @@ public class PlayerController : MonoBehaviour
         kickTrigger = GetComponentInChildren<Trigger>();
         kickTrigger.objectEnteredEvent.AddListener(KickHit);
         health = GetComponent<Health>();
+        health.deathEvent = new UnityEvent();
+        health.deathEvent.AddListener(Die);
+
         timeSinceLastKick = Time.time;
+        startPos = transform.position;
     }
 
     // Update is called once per frame
@@ -94,5 +99,18 @@ public class PlayerController : MonoBehaviour
                 health.Damage(1);
             }
         }
+    }
+
+    public int GetDistanceTraveled()
+    {
+        int dist = Mathf.FloorToInt(transform.position.x - startPos.x);
+        if (dist < 0) dist = 0;
+        return dist;
+    }
+
+    private void Die()
+    {
+        // TODO: do death animation
+        GameManager.Instance.GameOver();
     }
 }
