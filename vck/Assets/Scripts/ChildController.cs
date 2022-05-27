@@ -47,7 +47,6 @@ public class ChildController : MonoBehaviour
 
     private void Defeated()
     {
-        Debug.Log("child kicked");
         defeatEvent.Invoke(isBad);
         mover.ClearTarget();
         if (collider) Destroy(collider);

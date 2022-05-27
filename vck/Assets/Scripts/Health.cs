@@ -5,15 +5,18 @@ using UnityEngine.Events;
 
 public class Health : MonoBehaviour
 {
-    public UnityEvent deathEvent;
+    public UnityEvent hitEvent, deathEvent;
     public float maxHealth;
+    public float invincibilityTime = 0.25f;
 
     private float currHealth;
+    private float hitTime;
 
     // Start is called before the first frame update
     void Start()
     {
         currHealth = maxHealth;
+        hitTime = Time.time;
     }
 
     // Update is called once per frame
@@ -29,6 +32,9 @@ public class Health : MonoBehaviour
 
     public void Damage(float damage)
     {
+        if (Time.time - hitTime < invincibilityTime) return;
+        hitTime = Time.time;
+
         currHealth -= damage;
         if (currHealth <= 0)
         {
@@ -36,6 +42,7 @@ public class Health : MonoBehaviour
             deathEvent.Invoke();
             Debug.Log("health is 0");
         }
+        hitEvent.Invoke();
         StartCoroutine(HitAnimation());
     }
 

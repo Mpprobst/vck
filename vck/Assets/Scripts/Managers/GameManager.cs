@@ -13,7 +13,7 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         GameManager[] gameManagers = GameObject.FindObjectsOfType<GameManager>();
-        if (gameManagers.Length > 0)
+        if (gameManagers.Length > 1)
         {
             Destroy(gameObject);
             return;
@@ -33,6 +33,6 @@ public class GameManager : MonoBehaviour
 
     public void GameOver()
     {
-
+        UIManager.Instance.ShowEndScreen();
     }
 }

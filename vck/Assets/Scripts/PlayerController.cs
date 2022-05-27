@@ -37,8 +37,11 @@ public class PlayerController : MonoBehaviour
         kickTrigger = GetComponentInChildren<Trigger>();
         kickTrigger.objectEnteredEvent.AddListener(KickHit);
         health = GetComponent<Health>();
+        health.hitEvent = new UnityEvent();
+        health.hitEvent.AddListener(Hit);
         health.deathEvent = new UnityEvent();
         health.deathEvent.AddListener(Die);
+        UIManager.Instance.SetHealth((int)health.maxHealth);
 
         timeSinceLastKick = Time.time;
         startPos = transform.position;
@@ -106,6 +109,11 @@ public class PlayerController : MonoBehaviour
         int dist = Mathf.FloorToInt(transform.position.x - startPos.x);
         if (dist < 0) dist = 0;
         return dist;
+    }
+
+    private void Hit()
+    {
+        UIManager.Instance.RemoveHP();
     }
 
     private void Die()
