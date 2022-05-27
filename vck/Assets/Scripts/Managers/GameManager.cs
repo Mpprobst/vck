@@ -12,7 +12,7 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        GameManager[] gameManagers = GameObject.FindObjectOfType<GameManager>();
+        GameManager[] gameManagers = GameObject.FindObjectsOfType<GameManager>();
         if (gameManagers.Length > 0)
         {
             Destroy(gameObject);

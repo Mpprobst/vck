@@ -143,8 +143,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -747520449
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_Sprite: {fileID: -6285261486224292654, guid: d38f96aa15d7e8242a66aa0b1b680f6e, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -228,6 +228,7 @@ MonoBehaviour:
   actionInput: Fire1
   walkAnimName: walking
   kickAnimName: kick
+  dirAnimName: direction
   model: {fileID: 8467196709158277820}
 --- !u!114 &8467196710281894586
 MonoBehaviour:
