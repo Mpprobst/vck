@@ -7,7 +7,7 @@ public class Health : MonoBehaviour
 {
     public UnityEvent hitEvent, deathEvent;
     public float maxHealth;
-    public float invincibilityTime = 0.25f;
+    private float invincibilityTime = 0.5f;
 
     private float currHealth;
     private float hitTime;
@@ -40,7 +40,6 @@ public class Health : MonoBehaviour
         {
             currHealth = 0;
             deathEvent.Invoke();
-            Debug.Log("health is 0");
         }
         hitEvent.Invoke();
         StartCoroutine(HitAnimation());

@@ -22,22 +22,18 @@ public class UIManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        UIManager[] uimanagers = GameObject.FindObjectsOfType<UIManager>();
-        if (uimanagers.Length > 1)
-        {
-            Destroy(gameObject);
-        }
+        if (_instance == null)
+            _instance = this;
+        if (_instance != this)
+            Destroy(this);
 
-        DontDestroyOnLoad(gameObject);
-        _instance = this;
-
-        endPanel.SetActive(false);
-        player = GameObject.FindObjectOfType<PlayerController>();
+        Reset();
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (player == null) return;
         UpdateDistance(player.GetDistanceTraveled());
     }
 
@@ -48,13 +44,21 @@ public class UIManager : MonoBehaviour
         // TODO: animate end screen
     }
 
+    public void Reset()
+    {
+        endPanel.SetActive(false);
+        player = GameObject.FindObjectOfType<PlayerController>();
+    }
+
     public void UpdateScore(int points)
     {
+        // TODO: animate score in a fun way
         score.text = "score: " + points.ToString();
     }
 
     public void UpdateDistance(int dist)
     {
+        // TODO: every 10 or so meters, flash the distance in a fun way
         distance.text = "distance: " + dist.ToString() + "m";
     }
 

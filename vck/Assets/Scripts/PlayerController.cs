@@ -22,6 +22,7 @@ public class PlayerController : MonoBehaviour
     private Trigger kickTrigger;
     private Health health;
 
+    private bool canMove;
     private bool moving;
     private bool kicking;
 
@@ -36,6 +37,7 @@ public class PlayerController : MonoBehaviour
         animator = GetComponentInChildren<Animator>();
         kickTrigger = GetComponentInChildren<Trigger>();
         kickTrigger.objectEnteredEvent.AddListener(KickHit);
+
         health = GetComponent<Health>();
         health.hitEvent = new UnityEvent();
         health.hitEvent.AddListener(Hit);
@@ -45,11 +47,15 @@ public class PlayerController : MonoBehaviour
 
         timeSinceLastKick = Time.time;
         startPos = transform.position;
+
+        canMove = true;
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (!canMove) return;
+
         moving = false;
         float x = Input.GetAxisRaw(horizInput);
 
@@ -68,7 +74,7 @@ public class PlayerController : MonoBehaviour
             model.transform.localScale = new Vector3(1, 1, 1);
         }
 
-        Vector2 movement = new Vector2(x * speed * Time.deltaTime * 100f, 0);
+        Vector2 movement = new Vector2(x * speed * Time.deltaTime, 0);
         animator.SetBool(walkAnimName, moving);
 
         if (Input.GetButtonDown(actionInput))
@@ -80,7 +86,8 @@ public class PlayerController : MonoBehaviour
         {
             movement = new Vector2();
         }
-        rb.velocity = movement;
+        //rb.velocity = movement;
+        transform.Translate(movement);
 
     }
 
@@ -92,14 +99,18 @@ public class PlayerController : MonoBehaviour
 
     private void KickHit(GameObject hit)
     {
-        Debug.Log("kickhit");
         ChildController child = hit.GetComponentInParent<ChildController>();
         if (child)
         {
             child.GetComponent<Health>().Damage(100);
             if (!child.isBad)
             {
-                health.Damage(1);
+                //health.Damage(1);
+                GameManager.Instance.AddScore(-1000);
+            }
+            else
+            {
+                GameManager.Instance.AddScore(500);
             }
         }
     }
@@ -119,6 +130,12 @@ public class PlayerController : MonoBehaviour
     private void Die()
     {
         // TODO: do death animation
+        canMove = false;
         GameManager.Instance.GameOver();
+    }
+
+    public bool IsAlive()
+    {
+        return health.IsAlive();
     }
 }

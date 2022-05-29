@@ -6,16 +6,25 @@ using UnityEngine.Events;
 public class ChildController : MonoBehaviour
 {
     public Transform model;
+    public GameObject secretFace;   // demon face for bad children when revealed
     public bool isBad;
     public UnityEvent<bool> defeatEvent;
+    public float speedRange = 0.25f;
+    public float attackDelay = 0.5f;
+    public float desapwnTime = 10f;
+    public float minDist = 10f;
 
     private Health health;
     private MoveTowards mover;
     private Trigger attackTrigger;
+    private PlayerController player;
 
     private Animator animator;
     private Rigidbody2D rb;
     private Collider2D collider;
+
+    private bool revealed;
+    private float spawnTime;
 
     // Start is called before the first frame update
     void Start()
@@ -24,12 +33,16 @@ public class ChildController : MonoBehaviour
         health.deathEvent = new UnityEvent();
         health.deathEvent.AddListener(Defeated);
 
-        PlayerController player = GameObject.FindObjectOfType<PlayerController>();
+        player = GameObject.FindObjectOfType<PlayerController>();
         mover = GetComponent<MoveTowards>();
         mover.destinationReached = new UnityEvent();
         mover.destinationReached.AddListener(Attack);
+        float baseSpeed = 0.5f + DifficultyManager.Instance.Difficulty/2f;
+        mover.speed = Random.Range(baseSpeed - speedRange, baseSpeed + speedRange);
         mover.SetTarget(player.transform);
 
+        attackDelay = Random.Range(attackDelay, attackDelay + 0.1f) / DifficultyManager.Instance.Difficulty;
+        mover.moveDelay = 2f * attackDelay;
         attackTrigger = GetComponentInChildren<Trigger>();
         attackTrigger.objectEnteredEvent = new UnityEvent<GameObject>();
         attackTrigger.objectEnteredEvent.AddListener(TriggerHit);
@@ -37,16 +50,24 @@ public class ChildController : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponentInChildren<Animator>();
         collider = GetComponentInChildren<Collider2D>();
+
+        secretFace.SetActive(false);
+        spawnTime = Time.time;
     }
 
     // Update is called once per frame
     void Update()
     {
-        animator.SetBool("moving", mover.IsMoving());   
+        animator.SetBool("moving", mover.IsMoving());
+        if (Vector3.Distance(player.transform.position, transform.position) > minDist && Time.time - spawnTime > desapwnTime)
+        {
+            Defeated();
+        }
     }
 
     private void Defeated()
     {
+        animator.SetTrigger("die");
         defeatEvent.Invoke(isBad);
         mover.ClearTarget();
         if (collider) Destroy(collider);
@@ -105,8 +126,22 @@ public class ChildController : MonoBehaviour
             // try making the attack animation lower in height so player can kick the head
             // as well as making the attack from a shorter distance so we don't have to kick
             // while child is flying at us
-            animator.SetTrigger("attack");
+            if (!revealed)
+            {
+                secretFace.SetActive(true);
+                mover.speed += 0.25f;
+            }
+            StartCoroutine(StartAttack());
         }
+    }
+
+    private IEnumerator StartAttack()
+    {
+        animator.speed = DifficultyManager.Instance.Difficulty / 2f;
+        yield return new WaitForEndOfFrame();
+        yield return new WaitForSecondsRealtime(attackDelay);
+        animator.SetTrigger("attack");
+        animator.speed = 1f;
     }
 
     private void AttackEnd()

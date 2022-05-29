@@ -27,6 +27,13 @@ public class SpawnManager : MonoBehaviour
         SpawnEntity();
     }
 
+    public void StopSpawning()
+    {
+        canSpawn = false;
+        foreach (var entity in spawnedEntities)
+            entity.isBad = false;   
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -43,13 +50,14 @@ public class SpawnManager : MonoBehaviour
         lastSpawnTime = Time.time;
         if (spawnedEntities.Count >= maxEntities) return;
 
-        float dir = Random.Range(-1f, 1f);
+        float dir = Random.Range(-1f, 1.5f);
         if (dir < 0) dir = -1f;
         else dir = 1f;
         Vector3 spawnPos = new Vector3(spawnOffset.x * dir, spawnOffset.y, spawnOffset.z) + player.transform.position;
         ChildController spawned = Instantiate(entityPrefab, spawnPos, new Quaternion(), transform).GetComponent<ChildController>();
         totalSpawned++;
-        spawned.isBad = Random.Range(0f, 1f) < badnessRatio;
+        // TODO: increase number of children, their speed, and attack speed as time goes on
+        spawned.isBad = Random.Range(0f, 1f) < badnessRatio + (1f-DifficultyManager.Instance.Difficulty)/5f;
         spawned.defeatEvent = new UnityEvent<bool>();
         spawned.defeatEvent.AddListener(EntityDestroyed);
         spawnedEntities.Add(spawned);

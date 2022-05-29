@@ -36,7 +36,9 @@ public class MoveTowards : MonoBehaviour
             }
             else if (pause && Time.time - moveTime > moveDelay)
             {
-                Resume();
+                moveDelay = Time.time;
+                Invoke("Resume", moveDelay-0.1f);
+                //Resume();
             }
 
             if (!pause)
