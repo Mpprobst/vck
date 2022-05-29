@@ -2001,8 +2001,12 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
     - target: {fileID: 257177496061110714, guid: f7bba2df781fd493f8c0f0c967a325fa, type: 3}
+      propertyPath: m_FalloffIntensity
+      value: 0.702
+      objectReference: {fileID: 0}
+    - target: {fileID: 257177496061110714, guid: f7bba2df781fd493f8c0f0c967a325fa, type: 3}
       propertyPath: m_PointLightOuterRadius
-      value: 6.71
+      value: 5.96
       objectReference: {fileID: 0}
     - target: {fileID: 312694519163928267, guid: f7bba2df781fd493f8c0f0c967a325fa, type: 3}
       propertyPath: m_Name
@@ -2076,6 +2080,10 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+    - target: {fileID: 7536035430716710960, guid: f7bba2df781fd493f8c0f0c967a325fa, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 3962117551479330697, guid: a468c2bc006ad427998f4a8d430d1c7d, type: 3}
     - target: {fileID: 7536035430716710960, guid: f7bba2df781fd493f8c0f0c967a325fa, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 

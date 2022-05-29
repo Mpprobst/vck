@@ -30,8 +30,13 @@ public class PlayerController : MonoBehaviour
     private float kickDelay = 0.5f;
     private Vector3 startPos;
 
+    private void Start()
+    {
+        //Initialize();
+    }
+
     // Start is called before the first frame update
-    void Start()
+    public void Initialize()
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponentInChildren<Animator>();

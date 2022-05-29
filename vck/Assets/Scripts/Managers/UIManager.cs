@@ -19,8 +19,12 @@ public class UIManager : MonoBehaviour
 
     private PlayerController player;
 
-    // Start is called before the first frame update
-    void Start()
+    private void Start()
+    {
+        Initialize();
+    }
+
+    public void Initialize()
     {
         if (_instance == null)
             _instance = this;

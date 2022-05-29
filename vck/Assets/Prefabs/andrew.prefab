@@ -249,6 +249,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   maxHealth: 3
+  unlit: {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
+  lit: {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
 --- !u!50 &8467196710281894580
 Rigidbody2D:
   serializedVersion: 4

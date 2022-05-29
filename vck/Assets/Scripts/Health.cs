@@ -7,6 +7,8 @@ public class Health : MonoBehaviour
 {
     public UnityEvent hitEvent, deathEvent;
     public float maxHealth;
+    public Material unlit, lit;
+
     private float invincibilityTime = 0.5f;
 
     private float currHealth;
@@ -49,8 +51,10 @@ public class Health : MonoBehaviour
     {
         float flashTime = 0.5f;
         SpriteRenderer renderer = GetComponentInChildren<SpriteRenderer>();
+        renderer.material = unlit;
         renderer.color = Color.red;
         yield return new WaitForSecondsRealtime(flashTime);
+        renderer.material = lit;
         renderer.color = Color.white;
     }
 }

@@ -9,6 +9,8 @@ public class GameManager : MonoBehaviour
     private static GameManager _instance;
 
     private SpawnManager spawnManager;
+    private UIManager uiManager;
+    private PlayerController player;
     private int score;
 
     // Start is called before the first frame update
@@ -32,7 +34,13 @@ public class GameManager : MonoBehaviour
     {
         spawnManager = GameObject.FindObjectOfType<SpawnManager>();
         spawnManager.BeginSpawning();   // TODO: maybe start spawning after a certain distance has been traveled
-        UIManager.Instance.Reset();
+
+        uiManager = GameObject.FindObjectOfType<UIManager>();
+        uiManager.Initialize();
+        uiManager.UpdateScore(score);
+
+        player = GameObject.FindObjectOfType<PlayerController>();
+        player.Initialize();
     }
 
     public void AddScore(int points)
