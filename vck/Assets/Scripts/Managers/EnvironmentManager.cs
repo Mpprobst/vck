@@ -11,7 +11,7 @@ public class EnvironmentManager : MonoBehaviour
     public float backgroundSpawnDist = 25f;
 
     public Transform foreground, middleground, background;
-    public GameObject[] foregroundEnvs, middlegroundEnvs, backgroundEnvs;
+    public EnvironmentBlockData[] foregroundEnvs, middlegroundEnvs, backgroundEnvs;
 
     private EnvironmentBlock recentForeground, recentMiddleground, recentBackground;
     private Transform player;
@@ -30,9 +30,9 @@ public class EnvironmentManager : MonoBehaviour
         SpawnBlock(backgroundEnvs, ref recentBackground, backgroundSpawnDist, background);
     }
 
-    private void SpawnBlock(GameObject[] prefabs, ref EnvironmentBlock recent, float spawnDist, Transform parent)
+    private void SpawnBlock(EnvironmentBlockData[] blockData, ref EnvironmentBlock recent, float spawnDist, Transform parent)
     {
-        if (parent == null || prefabs.Length == 0) return;
+        if (parent == null || blockData.Length == 0) return;
         float distance = 0;
         Vector3 pos = parent.position;
         if (recent)
@@ -43,8 +43,8 @@ public class EnvironmentManager : MonoBehaviour
 
         if (distance < spawnDist)
         {
-            int randint = Random.Range(0, prefabs.Length);
-            EnvironmentBlock newBlock = Instantiate(prefabs[randint], pos, new Quaternion(), parent).GetComponent<EnvironmentBlock>();
+            int randint = Random.Range(0, blockData.Length);
+            EnvironmentBlock newBlock = Instantiate(blockData[randint].blockPrefab, pos, new Quaternion(), parent).GetComponent<EnvironmentBlock>();
             recent = newBlock;
         }
     }
