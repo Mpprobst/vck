@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Events;
 
 public class GameManager : MonoBehaviour
 {
@@ -11,6 +12,7 @@ public class GameManager : MonoBehaviour
     private SpawnManager spawnManager;
     private UIManager uiManager;
     private PlayerController player;
+    private EndCutscene endCutscene;
     private int score;
 
     // Start is called before the first frame update
@@ -41,6 +43,8 @@ public class GameManager : MonoBehaviour
 
         player = GameObject.FindObjectOfType<PlayerController>();
         player.Initialize();
+
+        endCutscene = GameObject.FindObjectOfType<EndCutscene>();
     }
 
     public void AddScore(int points)
@@ -51,8 +55,15 @@ public class GameManager : MonoBehaviour
 
     public void GameOver()
     {
-        UIManager.Instance.ShowEndScreen();
+        endCutscene.complete = new UnityEvent();
+        endCutscene.complete.AddListener(End);
+        endCutscene.Play();
         spawnManager.StopSpawning();
+    }
+
+    private void End()
+    {
+        UIManager.Instance.ShowEndScreen();
     }
 
     public void Retry()
