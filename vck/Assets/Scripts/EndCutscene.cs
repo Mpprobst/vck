@@ -10,21 +10,20 @@ public class EndCutscene : MonoBehaviour
     public Transform foreground;
 
     private PlayerController player;
-    private MoveTowards carMover;
+    private PoliceCar policeCar;
 
     public void Play()
     {
         player = GameObject.FindObjectOfType<PlayerController>();
 
         Vector3 spawnPos = new Vector3(player.transform.position.x-7f, 0, 0);
-        GameObject spawnedCar = Instantiate(policePrefab, spawnPos, new Quaternion(), foreground);
-        carMover = spawnedCar.AddComponent<MoveTowards>();
-        carMover.arrivalDistance = 0.5f;
-        carMover.speed = 3f;
-        carMover.destinationReached = new UnityEvent();
-        carMover.destinationReached.AddListener(MakeArrest);
-        carMover.SetTarget(player.transform);
-
+        policeCar = Instantiate(policePrefab, spawnPos, new Quaternion(), foreground).GetComponent<PoliceCar>();
+        policeCar.mover = policeCar.gameObject.AddComponent<MoveTowards>();
+        policeCar.mover.arrivalDistance = 0.5f;
+        policeCar.mover.speed = 3f;
+        policeCar.mover.destinationReached = new UnityEvent();
+        policeCar.mover.destinationReached.AddListener(MakeArrest);
+        policeCar.mover.SetTarget(player.transform);
     }
 
     private void MakeArrest()
@@ -34,16 +33,33 @@ public class EndCutscene : MonoBehaviour
 
     private IEnumerator Pickup()
     {
+        policeCar.mover.destinationReached = new UnityEvent();
+        policeCar.mover.ClearTarget();
+        Destroy(GameObject.FindObjectOfType<CameraFollow>());
+        player.Caught();
+
         yield return new WaitForSecondsRealtime(0.5f);
 
-        player.gameObject.SetActive(false);
+        Vector3 startPos = player.transform.position;
+        Vector3 goalPos = policeCar.backseat.position;
+        float moveTime = 1f;
+        float t = 0f;
+        while (t < moveTime)
+        {
+            player.transform.localPosition = Vector3.Lerp(startPos, goalPos, t / moveTime);
+            yield return new WaitForEndOfFrame();
+            t += Time.deltaTime;
+        }
 
+        player.transform.parent = policeCar.backseat;
+        Destroy(player);
+
+        // TODO: play car start sfx
         yield return new WaitForSecondsRealtime(1f);
 
         GameObject carrot = new GameObject();
-        carrot.transform.parent = carMover.transform;
-        carrot.transform.localPosition = new Vector2(carMover.transform.localScale.x * 5f, 0);
-        carMover.SetTarget(carrot.transform);
+        carrot.transform.position = new Vector2(policeCar.transform.position.x + 10f, 0);
+        policeCar.mover.SetTarget(carrot.transform);
 
         yield return new WaitForSecondsRealtime(1f);
 

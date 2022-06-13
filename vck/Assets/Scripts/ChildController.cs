@@ -59,6 +59,7 @@ public class ChildController : MonoBehaviour
     void Update()
     {
         animator.SetBool("moving", mover.IsMoving());
+        if (player == null) return;
         if (Vector3.Distance(player.transform.position, transform.position) > minDist && Time.time - spawnTime > desapwnTime)
         {
             Defeated();

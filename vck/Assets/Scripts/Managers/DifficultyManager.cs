@@ -34,6 +34,7 @@ public class DifficultyManager : MonoBehaviour
 
     private void UpdateDifficulty()
     {
+        if (player == null) return;
         int distance = player.GetDistanceTraveled() / 10;
         // make it harder every 10m
         _diff = 1f + (float)distance / 10f;

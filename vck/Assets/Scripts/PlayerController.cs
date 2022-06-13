@@ -15,8 +15,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField] string walkAnimName = "moving";
     [SerializeField] string kickAnimName = "kick";
     [SerializeField] string dirAnimName = "direction";
+    [SerializeField] string caughtAnimName = "caught";
 
     [SerializeField] GameObject model;
+    [SerializeField] Sprite topHalfSprite;
     private Rigidbody2D rb;
     private Animator animator;
     private Trigger kickTrigger;
@@ -25,6 +27,7 @@ public class PlayerController : MonoBehaviour
     private bool canMove;
     private bool moving;
     private bool kicking;
+    private bool arresting;
 
     private float timeSinceLastKick;
     private float kickDelay = 0.5f;
@@ -134,9 +137,30 @@ public class PlayerController : MonoBehaviour
 
     private void Die()
     {
+        health.deathEvent = new UnityEvent();
         // TODO: do death animation
         canMove = false;
         GameManager.Instance.GameOver();
+        animator.SetTrigger(caughtAnimName);
+        StartCoroutine(ArrestingAnimation());
+    }
+
+    private IEnumerator ArrestingAnimation()
+    {
+        arresting = true;
+        while (arresting)
+        {
+            yield return new WaitForSecondsRealtime(0.5f);
+            model.transform.localScale = new Vector3(model.transform.localScale.x * -1f, 1, 1);
+        }
+        Destroy(animator);
+        model.transform.localScale = new Vector3(1,1,1);
+        model.GetComponent<SpriteRenderer>().sprite = topHalfSprite;
+    }
+
+    public void Caught()
+    {
+        arresting = false;
     }
 
     public bool IsAlive()
