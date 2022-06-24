@@ -19,8 +19,13 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] GameObject model;
     [SerializeField] Sprite topHalfSprite;
+
+    [SerializeField] private AudioClip[] hitClips, kickClips, attackClips;
+    [SerializeField] private AudioClip deathClip;
+
     private Rigidbody2D rb;
     private Animator animator;
+    private AudioSource audioSource;
     private Trigger kickTrigger;
     private Health health;
 
@@ -43,6 +48,7 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponentInChildren<Animator>();
+        audioSource = GetComponent<AudioSource>();
         kickTrigger = GetComponentInChildren<Trigger>();
         kickTrigger.objectEnteredEvent.AddListener(KickHit);
 
@@ -101,6 +107,8 @@ public class PlayerController : MonoBehaviour
 
     private void Kick()
     {
+        audioSource.clip = kickClips[Random.Range(0, kickClips.Length)];
+        audioSource.Play();
         timeSinceLastKick = Time.time;
         animator.SetTrigger(kickAnimName);
     }
@@ -110,6 +118,8 @@ public class PlayerController : MonoBehaviour
         ChildController child = hit.GetComponentInParent<ChildController>();
         if (child)
         {
+            audioSource.clip = attackClips[Random.Range(0, attackClips.Length)];
+            audioSource.Play();
             child.GetComponent<Health>().Damage(100);
             if (!child.isBad)
             {
@@ -132,11 +142,15 @@ public class PlayerController : MonoBehaviour
 
     private void Hit()
     {
+        audioSource.clip = hitClips[Random.Range(0, hitClips.Length)];
+        audioSource.Play();
         UIManager.Instance.RemoveHP();
     }
 
     private void Die()
     {
+        audioSource.clip = deathClip;
+        audioSource.Play();
         health.deathEvent = new UnityEvent();
         // TODO: do death animation
         canMove = false;

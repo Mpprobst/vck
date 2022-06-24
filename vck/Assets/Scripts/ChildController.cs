@@ -13,6 +13,8 @@ public class ChildController : MonoBehaviour
     public float attackDelay = 0.5f;
     public float desapwnTime = 10f;
     public float minDist = 10f;
+    public AudioClip[] attackClips;
+    public AudioClip[] hitClips;
 
     private Health health;
     private MoveTowards mover;
@@ -22,6 +24,7 @@ public class ChildController : MonoBehaviour
     private Animator animator;
     private Rigidbody2D rb;
     private Collider2D collider;
+    private AudioSource audioSource;
 
     private bool revealed;
     private float spawnTime;
@@ -50,6 +53,7 @@ public class ChildController : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponentInChildren<Animator>();
         collider = GetComponentInChildren<Collider2D>();
+        audioSource = GetComponent<AudioSource>();
 
         secretFace.SetActive(false);
         spawnTime = Time.time;
@@ -68,6 +72,8 @@ public class ChildController : MonoBehaviour
 
     private void Defeated()
     {
+        audioSource.clip = hitClips[Random.Range(0, hitClips.Length)];
+        audioSource.Play();
         animator.SetTrigger("die");
         defeatEvent.Invoke(isBad);
         mover.ClearTarget();
@@ -138,6 +144,8 @@ public class ChildController : MonoBehaviour
 
     private IEnumerator StartAttack()
     {
+        audioSource.clip = attackClips[Random.Range(0, attackClips.Length)];
+        audioSource.Play();
         animator.speed = DifficultyManager.Instance.Difficulty / 2f;
         yield return new WaitForEndOfFrame();
         yield return new WaitForSecondsRealtime(attackDelay);
@@ -152,10 +160,10 @@ public class ChildController : MonoBehaviour
 
     private void TriggerHit(GameObject hitObject)
     {
-        PlayerController player = hitObject.GetComponentInParent<PlayerController>();
-        if (player)
+        PlayerController p = hitObject.GetComponentInParent<PlayerController>();
+        if (p)
         {
-            player.GetComponent<Health>().Damage(1f);
+            p.GetComponent<Health>().Damage(1f);
         }
     }
 }
