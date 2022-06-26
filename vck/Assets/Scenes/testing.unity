@@ -903,7 +903,7 @@ MonoBehaviour:
   m_BlendStyleIndex: 1
   m_FalloffIntensity: 0.5
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 0.18
+  m_Intensity: 0.09
   m_LightVolumeOpacity: 0
   m_ApplyToSortingLayers: 898bccd5
   m_LightCookieSprite: {fileID: 0}
@@ -1841,6 +1841,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 8b2cc7d279ccc4bd19310b22cb5ca4b1, type: 2}
   middlegroundEnvs:
   - {fileID: 11400000, guid: 9f46e89a061da4843a6f41df656c065e, type: 2}
+  - {fileID: 11400000, guid: e0be89840faa04b1ca57f951d6a2a49d, type: 2}
+  - {fileID: 11400000, guid: a42021ddd460449f4a09b93a786d7ed7, type: 2}
   backgroundEnvs:
   - {fileID: 11400000, guid: 292b496743d6a4833a467ec12acbd6ec, type: 2}
 --- !u!1 &1688076895

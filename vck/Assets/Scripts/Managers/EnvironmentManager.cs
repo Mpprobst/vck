@@ -43,8 +43,33 @@ public class EnvironmentManager : MonoBehaviour
 
         if (distance < spawnDist)
         {
-            int randint = Random.Range(0, blockData.Length);
-            EnvironmentBlock newBlock = Instantiate(blockData[randint].blockPrefab, pos, new Quaternion(), parent).GetComponent<EnvironmentBlock>();
+            float totalProb = 0;
+            float[] probs = new float[blockData.Length];
+            for (int i = 0; i < blockData.Length; i++)
+            {
+                float prob = blockData[i].probability;
+                if (blockData[i].difficulty > DifficultyManager.Instance.Difficulty)
+                    prob /= (blockData[i]).difficulty - DifficultyManager.Instance.Difficulty;
+                probs[i] = prob;
+                totalProb += blockData[i].probability;
+            }
+
+            float randVal = Random.Range(0f, totalProb);
+            int blockIdx = 0;// Random.Range(0, blockData.Length);
+
+            for (int i = 0; i < probs.Length; i++)
+            {
+                if (randVal < probs[i])
+                {
+                    blockIdx = i;
+                    break;
+                }
+                else
+                {
+                    randVal -= probs[i];
+                }
+            }
+            EnvironmentBlock newBlock = Instantiate(blockData[blockIdx].blockPrefab, pos, new Quaternion(), parent).GetComponent<EnvironmentBlock>();
             recent = newBlock;
         }
     }
