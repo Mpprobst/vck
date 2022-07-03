@@ -5,6 +5,9 @@ TextureImporter:
   - first:
       213: 3361876388176152506
     second: cars_lights_0
+  - first:
+      213: 865476262597765976
+    second: cars_lights_1
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -122,6 +125,27 @@ TextureImporter:
       bones: []
       spriteID: ab7430853c8c7ae20800000000000000
       internalID: 3361876388176152506
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cars_lights_1
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 0
+        width: 256
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 85b2ca9431ac20c00800000000000000
+      internalID: 865476262597765976
       vertices: []
       indices: 
       edges: []

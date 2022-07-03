@@ -5,6 +5,9 @@ TextureImporter:
   - first:
       213: 8282042346942556162
     second: cars_0
+  - first:
+      213: 3142733431838295593
+    second: cars_1
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -122,6 +125,27 @@ TextureImporter:
       bones: []
       spriteID: 208e04862a9bfe270800000000000000
       internalID: 8282042346942556162
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cars_1
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 0
+        width: 256
+        height: 128
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9264774c76b3d9b20800000000000000
+      internalID: 3142733431838295593
       vertices: []
       indices: 
       edges: []

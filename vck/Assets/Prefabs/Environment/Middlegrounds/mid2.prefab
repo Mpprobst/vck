@@ -1164,6 +1164,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: copcar
       objectReference: {fileID: 0}
+    - target: {fileID: 6137680139604623361, guid: 7cb297f2b0acc49e4b93a4dbfb14ac00, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7cb297f2b0acc49e4b93a4dbfb14ac00, type: 3}
 --- !u!4 &6933655309099075061 stripped

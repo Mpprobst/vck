@@ -77,6 +77,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   endpoint: {fileID: 5645768840887620610}
+  carPrefab: {fileID: 5725655984933408453, guid: 3c3ee7fa2ae25424a99fbc0bc8a283c3, type: 3}
 --- !u!1 &314378165378336279
 GameObject:
   m_ObjectHideFlags: 0
@@ -244,7 +245,7 @@ MonoBehaviour:
   m_BlendStyleIndex: 0
   m_FalloffIntensity: 0.623
   m_Color: {r: 0.6037736, g: 0.5723003, b: 0.26486292, a: 1}
-  m_Intensity: 1.39
+  m_Intensity: 1.2
   m_LightVolumeOpacity: 0.92
   m_ApplyToSortingLayers: 00000000a73e1cb83fbe71d37357792b
   m_LightCookieSprite: {fileID: 0}
@@ -256,7 +257,7 @@ MonoBehaviour:
   m_PointLightInnerAngle: 360
   m_PointLightOuterAngle: 360
   m_PointLightInnerRadius: 0.76
-  m_PointLightOuterRadius: 4.08
+  m_PointLightOuterRadius: 3.84
   m_PointLightDistance: 3
   m_PointLightQuality: 1
   m_ShapeLightParametricSides: 5

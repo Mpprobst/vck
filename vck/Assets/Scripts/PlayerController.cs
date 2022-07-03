@@ -123,8 +123,8 @@ public class PlayerController : MonoBehaviour
             child.GetComponent<Health>().Damage(100);
             if (!child.isBad)
             {
-                //health.Damage(1);
-                GameManager.Instance.AddScore(-1000);
+                health.Damage(1);
+                //GameManager.Instance.AddScore(-1000);
             }
             else
             {
