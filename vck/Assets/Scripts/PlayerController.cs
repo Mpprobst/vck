@@ -15,16 +15,24 @@ public class PlayerController : MonoBehaviour
     [SerializeField] string walkAnimName = "moving";
     [SerializeField] string kickAnimName = "kick";
     [SerializeField] string dirAnimName = "direction";
+    [SerializeField] string caughtAnimName = "caught";
 
     [SerializeField] GameObject model;
+    [SerializeField] Sprite topHalfSprite;
+
+    [SerializeField] private AudioClip[] hitClips, kickClips, attackClips;
+    [SerializeField] private AudioClip deathClip;
+
     private Rigidbody2D rb;
     private Animator animator;
+    private AudioSource audioSource;
     private Trigger kickTrigger;
     private Health health;
 
     private bool canMove;
     private bool moving;
     private bool kicking;
+    private bool arresting;
 
     private float timeSinceLastKick;
     private float kickDelay = 0.5f;
@@ -40,6 +48,7 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponentInChildren<Animator>();
+        audioSource = GetComponent<AudioSource>();
         kickTrigger = GetComponentInChildren<Trigger>();
         kickTrigger.objectEnteredEvent.AddListener(KickHit);
 
@@ -98,6 +107,8 @@ public class PlayerController : MonoBehaviour
 
     private void Kick()
     {
+        audioSource.clip = kickClips[Random.Range(0, kickClips.Length)];
+        audioSource.Play();
         timeSinceLastKick = Time.time;
         animator.SetTrigger(kickAnimName);
     }
@@ -107,11 +118,13 @@ public class PlayerController : MonoBehaviour
         ChildController child = hit.GetComponentInParent<ChildController>();
         if (child)
         {
+            audioSource.clip = attackClips[Random.Range(0, attackClips.Length)];
+            audioSource.Play();
             child.GetComponent<Health>().Damage(100);
             if (!child.isBad)
             {
-                //health.Damage(1);
-                GameManager.Instance.AddScore(-1000);
+                health.Damage(1);
+                //GameManager.Instance.AddScore(-1000);
             }
             else
             {
@@ -129,14 +142,39 @@ public class PlayerController : MonoBehaviour
 
     private void Hit()
     {
+        audioSource.clip = hitClips[Random.Range(0, hitClips.Length)];
+        audioSource.Play();
         UIManager.Instance.RemoveHP();
     }
 
     private void Die()
     {
+        audioSource.clip = deathClip;
+        audioSource.Play();
+        health.deathEvent = new UnityEvent();
         // TODO: do death animation
         canMove = false;
         GameManager.Instance.GameOver();
+        animator.SetTrigger(caughtAnimName);
+        StartCoroutine(ArrestingAnimation());
+    }
+
+    private IEnumerator ArrestingAnimation()
+    {
+        arresting = true;
+        while (arresting)
+        {
+            yield return new WaitForSecondsRealtime(0.5f);
+            model.transform.localScale = new Vector3(model.transform.localScale.x * -1f, 1, 1);
+        }
+        Destroy(animator);
+        model.transform.localScale = new Vector3(1,1,1);
+        model.GetComponent<SpriteRenderer>().sprite = topHalfSprite;
+    }
+
+    public void Caught()
+    {
+        arresting = false;
     }
 
     public bool IsAlive()

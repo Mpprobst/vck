@@ -16,12 +16,14 @@ public class MoveTowards : MonoBehaviour
 
     private Transform target;
     private Rigidbody2D rb;
+    private Vector3 originalScale;
 
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         moveTime = Time.time;
+        originalScale = transform.localScale;
     }
 
     // Update is called once per frame
@@ -48,11 +50,11 @@ public class MoveTowards : MonoBehaviour
 
                 if (dir.x < 0 && transform.localScale.x > 0)
                 {
-                    transform.localScale = new Vector3(-1, 1, 1);
+                    transform.localScale = new Vector3(originalScale.x * -1f, originalScale.y, originalScale.z);
                 }
                 else if (dir.x > 0 && transform.localScale.x < 0)
                 {
-                    transform.localScale = new Vector3(1, 1, 1);
+                    transform.localScale = originalScale;
                 }
                 //rb.AddForce(dir);
                 //transform.position = Vector3.MoveTowards(transform.position, target.position, Time.deltaTime * speed);

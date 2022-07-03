@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class House : MonoBehaviour
 {
-    [SerializeField] SpriteRenderer frame, roof, door, windows, lawn, fence;
-    [SerializeField] Sprite[] frameSprites, roofSprites, doorSprites, windowSprites, lawnSprites, fenceSprites;
+    [SerializeField] SpriteRenderer frame, roof, door, windows, lawn, fence, sky;
+    [SerializeField] Sprite[] frameSprites, roofSprites, doorSprites, windowSprites, lawnSprites, fenceSprites, skySprites;
     [SerializeField] Color[] frameColors, roofColors, doorColors, windowColors, lawnColors, fenceColors;
 
     // Start is called before the first frame update
@@ -17,6 +17,7 @@ public class House : MonoBehaviour
         RandomizeSprite(windows, windowSprites, doorColors);
         RandomizeSprite(lawn, lawnSprites, lawnColors);
         RandomizeSprite(fence, fenceSprites, fenceColors);
+        RandomizeSprite(sky, skySprites, lawnColors);
     }
 
     private void RandomizeSprite(SpriteRenderer rend, Sprite[] sprites, Color[] colors)
