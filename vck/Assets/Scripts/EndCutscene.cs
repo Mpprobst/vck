@@ -52,6 +52,7 @@ public class EndCutscene : MonoBehaviour
         }
 
         player.transform.parent = policeCar.backseat;
+        player.transform.localPosition = new Vector3();
         Destroy(player);
 
         // TODO: play car start sfx

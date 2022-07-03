@@ -6,6 +6,7 @@ using UnityEngine.Events;
 public class PlayerController : MonoBehaviour
 {
     public float speed = 1;
+    public float dialogueDelay = 5f;
     
     [Header("Input")]
     [SerializeField] string horizInput = "Horizontal";
@@ -19,13 +20,12 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] GameObject model;
     [SerializeField] Sprite topHalfSprite;
+    [SerializeField] private AudioSource primarySource, secondarySource;
 
-    [SerializeField] private AudioClip[] hitClips, kickClips, attackClips;
-    [SerializeField] private AudioClip deathClip;
+    [SerializeField] private AudioClip[] startClips, hitClips, kickClips, successClips, failClips, deathClips, miscClips;
 
     private Rigidbody2D rb;
     private Animator animator;
-    private AudioSource audioSource;
     private Trigger kickTrigger;
     private Health health;
 
@@ -34,7 +34,7 @@ public class PlayerController : MonoBehaviour
     private bool kicking;
     private bool arresting;
 
-    private float timeSinceLastKick;
+    private float kickTime, dialogueTime;
     private float kickDelay = 0.5f;
     private Vector3 startPos;
 
@@ -48,7 +48,6 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponentInChildren<Animator>();
-        audioSource = GetComponent<AudioSource>();
         kickTrigger = GetComponentInChildren<Trigger>();
         kickTrigger.objectEnteredEvent.AddListener(KickHit);
 
@@ -59,10 +58,13 @@ public class PlayerController : MonoBehaviour
         health.deathEvent.AddListener(Die);
         UIManager.Instance.SetHealth((int)health.maxHealth);
 
-        timeSinceLastKick = Time.time;
+        kickTime = Time.time;
+        dialogueTime = Time.time;
         startPos = transform.position;
 
         canMove = true;
+        secondarySource.clip = GetRandomClip(startClips);
+        secondarySource.PlayDelayed(1f);
     }
 
     // Update is called once per frame
@@ -96,20 +98,23 @@ public class PlayerController : MonoBehaviour
             Kick();
         }
 
-        if (Time.time - timeSinceLastKick < kickDelay)
+        if (Time.time - kickTime < kickDelay)
         {
             movement = new Vector2();
         }
-        //rb.velocity = movement;
         transform.Translate(movement);
 
+        if (Time.time - dialogueTime > dialogueDelay)
+        {
+            SayHey();
+        }
     }
 
     private void Kick()
     {
-        audioSource.clip = kickClips[Random.Range(0, kickClips.Length)];
-        audioSource.Play();
-        timeSinceLastKick = Time.time;
+        primarySource.clip = GetRandomClip(kickClips);
+        primarySource.Play();
+        kickTime = Time.time;
         animator.SetTrigger(kickAnimName);
     }
 
@@ -118,19 +123,44 @@ public class PlayerController : MonoBehaviour
         ChildController child = hit.GetComponentInParent<ChildController>();
         if (child)
         {
-            audioSource.clip = attackClips[Random.Range(0, attackClips.Length)];
-            audioSource.Play();
             child.GetComponent<Health>().Damage(100);
             if (!child.isBad)
             {
+                secondarySource.clip = GetRandomClip(failClips);
                 health.Damage(1);
-                //GameManager.Instance.AddScore(-1000);
+                GameManager.Instance.AddScore(-1000);
             }
             else
             {
+                secondarySource.clip = GetRandomClip(successClips);
                 GameManager.Instance.AddScore(500);
             }
+            secondarySource.PlayDelayed(0.75f);
         }
+    }
+
+    private void SayHey()
+    {
+        ChildController[] children = GameObject.FindObjectsOfType<ChildController>();
+        float minDist = 5f;
+        for (int i = 0; i < children.Length; i++)
+        {
+            float dist = Vector3.Distance(children[i].transform.position, transform.position);
+            if (dist < minDist) minDist = dist;
+            if (dist < children[i].minDist && !secondarySource.isPlaying)
+            {
+                secondarySource.clip = GetRandomClip(miscClips);
+                secondarySource.Play();
+                break;
+            }
+        }
+        dialogueDelay = Mathf.Clamp(minDist / 2f, 1.5f, 6f);
+        dialogueTime = Time.time;
+    }
+
+    private AudioClip GetRandomClip(AudioClip[] clips)
+    {
+        return clips[Random.Range(0, clips.Length)];
     }
 
     public int GetDistanceTraveled()
@@ -142,15 +172,15 @@ public class PlayerController : MonoBehaviour
 
     private void Hit()
     {
-        audioSource.clip = hitClips[Random.Range(0, hitClips.Length)];
-        audioSource.Play();
+        primarySource.clip = GetRandomClip(hitClips);
+        primarySource.Play();
         UIManager.Instance.RemoveHP();
     }
 
     private void Die()
     {
-        audioSource.clip = deathClip;
-        audioSource.Play();
+        secondarySource.clip = GetRandomClip(deathClips);
+        secondarySource.PlayDelayed(0.25f);
         health.deathEvent = new UnityEvent();
         // TODO: do death animation
         canMove = false;

@@ -11,6 +11,14 @@ public class House : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        if (Random.Range(0f,1f) < 0.1f)
+        {
+            frame.gameObject.SetActive(false);
+            roof.gameObject.SetActive(false);
+            door.gameObject.SetActive(false);
+            windows.gameObject.SetActive(false);
+            fence.gameObject.SetActive(false);
+        }
         RandomizeSprite(frame, frameSprites, frameColors);
         RandomizeSprite(roof, roofSprites, frameColors);
         RandomizeSprite(door, doorSprites, doorColors);

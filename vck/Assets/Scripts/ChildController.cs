@@ -26,7 +26,7 @@ public class ChildController : MonoBehaviour
     private Collider2D collider;
     private AudioSource audioSource;
 
-    private bool revealed;
+    private bool revealed, turned;
     private float spawnTime;
 
     // Start is called before the first frame update
@@ -64,10 +64,21 @@ public class ChildController : MonoBehaviour
     {
         animator.SetBool("moving", mover.IsMoving());
         if (player == null) return;
-        if (Vector3.Distance(player.transform.position, transform.position) > minDist && Time.time - spawnTime > desapwnTime)
+        if (Time.time - spawnTime > desapwnTime)
         {
-            Defeated();
+            if (Vector3.Distance(player.transform.position, transform.position) > minDist)
+            {
+                Defeated();
+            }
+            else if (!turned)    // if child has been following player for a long time, it will break bad and speed up
+            {
+                turned = true;
+                isBad = true;
+                mover.speed += 0.5f;
+                mover.SetTarget(player.transform);
+            }
         }
+        
     }
 
     private void Defeated()
