@@ -80,6 +80,11 @@ public class MoveTowards : MonoBehaviour
         Pause();
     }
 
+    public Transform GetTarget()
+    {
+        return target;
+    }
+
     public void Pause()
     {
         pause = true;

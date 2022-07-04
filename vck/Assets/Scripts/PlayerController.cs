@@ -135,7 +135,7 @@ public class PlayerController : MonoBehaviour
                 secondarySource.clip = GetRandomClip(successClips);
                 GameManager.Instance.AddScore(500);
             }
-            secondarySource.PlayDelayed(0.75f);
+            secondarySource.PlayDelayed(1f);
         }
     }
 
@@ -147,7 +147,7 @@ public class PlayerController : MonoBehaviour
         {
             float dist = Vector3.Distance(children[i].transform.position, transform.position);
             if (dist < minDist) minDist = dist;
-            if (dist < children[i].minDist && !secondarySource.isPlaying)
+            if (dist < 5f && !secondarySource.isPlaying && children[i].IsTargetingPlayer())
             {
                 secondarySource.clip = GetRandomClip(miscClips);
                 secondarySource.Play();

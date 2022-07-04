@@ -57,7 +57,8 @@ public class SpawnManager : MonoBehaviour
         ChildController spawned = Instantiate(entityPrefab, spawnPos, new Quaternion(), transform).GetComponent<ChildController>();
         totalSpawned++;
         // TODO: increase number of children, their speed, and attack speed as time goes on
-        spawned.isBad = Random.Range(0f, 1f) < badnessRatio + (1f-DifficultyManager.Instance.Difficulty)/5f;
+        badnessRatio = 0.25f + (1f - DifficultyManager.Instance.Difficulty) / 5f;
+        spawned.isBad = Random.Range(0f, 1f) < badnessRatio;
         spawned.defeatEvent = new UnityEvent<bool>();
         spawned.defeatEvent.AddListener(EntityDestroyed);
         spawnedEntities.Add(spawned);

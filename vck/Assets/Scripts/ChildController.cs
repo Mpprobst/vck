@@ -40,11 +40,15 @@ public class ChildController : MonoBehaviour
         mover = GetComponent<MoveTowards>();
         mover.destinationReached = new UnityEvent();
         mover.destinationReached.AddListener(Attack);
-        float baseSpeed = 0.5f + DifficultyManager.Instance.Difficulty/2f;
+        float baseSpeed = 0;
+        if (DifficultyManager.Instance)
+        {
+            baseSpeed = 0.5f + DifficultyManager.Instance.Difficulty / 2f;
+            attackDelay = Random.Range(attackDelay, attackDelay + 0.1f) / DifficultyManager.Instance.Difficulty;
+        }
         mover.speed = Random.Range(baseSpeed - speedRange, baseSpeed + speedRange);
         mover.SetTarget(player.transform);
 
-        attackDelay = Random.Range(attackDelay, attackDelay + 0.1f) / DifficultyManager.Instance.Difficulty;
         mover.moveDelay = 2f * attackDelay;
         attackTrigger = GetComponentInChildren<Trigger>();
         attackTrigger.objectEnteredEvent = new UnityEvent<GameObject>();
@@ -62,7 +66,8 @@ public class ChildController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        animator.SetBool("moving", mover.IsMoving());
+        if (animator)
+            animator.SetBool("moving", mover.IsMoving());
         if (player == null) return;
         if (Time.time - spawnTime > desapwnTime)
         {
@@ -138,7 +143,7 @@ public class ChildController : MonoBehaviour
             carrot.transform.localPosition = new Vector2(model.transform.localScale.x*5f, 0);
             mover.SetTarget(carrot.transform);
         }
-        else if (health.IsAlive())
+        else if (health.IsAlive() && player.IsAlive())
         {
             // TODO: have a delay before child begins attack to give player time to react.
             // try making the attack animation lower in height so player can kick the head
@@ -149,6 +154,8 @@ public class ChildController : MonoBehaviour
                 secretFace.SetActive(true);
                 mover.speed += 0.25f;
             }
+            if (DifficultyManager.Instance.Difficulty > 1.5f)
+                attackDelay = Mathf.Clamp(attackDelay * 0.8f, 0.1f, 10f);
             StartCoroutine(StartAttack());
         }
     }
@@ -176,5 +183,10 @@ public class ChildController : MonoBehaviour
         {
             p.GetComponent<Health>().Damage(1f);
         }
+    }
+
+    public bool IsTargetingPlayer()
+    {
+        return mover.GetTarget() == player.transform;
     }
 }

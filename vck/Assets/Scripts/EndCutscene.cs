@@ -24,6 +24,7 @@ public class EndCutscene : MonoBehaviour
         policeCar.mover.destinationReached = new UnityEvent();
         policeCar.mover.destinationReached.AddListener(MakeArrest);
         policeCar.mover.SetTarget(player.transform);
+        policeCar.PlaySiren();
     }
 
     private void MakeArrest()

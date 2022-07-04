@@ -305,6 +305,7 @@ MonoBehaviour:
   lawn: {fileID: 0}
   fence: {fileID: 4646145652995710401}
   sky: {fileID: 7463120453053233205}
+  sidewalk: {fileID: 4646145652639820985}
   frameSprites:
   - {fileID: -8820280589409731274, guid: 1e9968785c736439b99ff305e5a86b68, type: 3}
   roofSprites:
@@ -329,9 +330,8 @@ MonoBehaviour:
   - {r: 1, g: 1, b: 1, a: 1}
   roofColors:
   - {r: 1, g: 1, b: 1, a: 1}
-  - {r: 1, g: 1, b: 1, a: 1}
+  - {r: 0.4811321, g: 0.45982298, b: 0.4289338, a: 1}
   doorColors:
-  - {r: 1, g: 1, b: 1, a: 1}
   - {r: 0.54901963, g: 0.40784314, b: 0.2784314, a: 1}
   - {r: 0.84313726, g: 0.6431373, b: 0.3137255, a: 1}
   - {r: 0.4745098, g: 0.45882353, b: 0.43529412, a: 1}
@@ -742,7 +742,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -708015223
   m_SortingLayer: 1
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_Sprite: {fileID: -5414249869838382370, guid: da93b835cf1b54d57bac3ff3f7f61d4b, type: 3}
   m_Color: {r: 0.38679248, g: 0.30928433, b: 0.129539, a: 1}
   m_FlipX: 0

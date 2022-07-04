@@ -6,11 +6,12 @@ public class RandomCar : MonoBehaviour
 {
     [SerializeField] Color[] colors;
     public Transform lightsObj;
+    public bool dontDestroy;
 
     // Start is called before the first frame update
     void Start()
     {
-        if (Random.Range(0f, 1f) < 0.75f) Destroy(gameObject);
+        if (Random.Range(0f, 1f) < 0.75f && !dontDestroy) Destroy(gameObject);
 
         SpriteRenderer rend = GetComponent<SpriteRenderer>();
         rend.color = colors[Random.Range(0, colors.Length)];

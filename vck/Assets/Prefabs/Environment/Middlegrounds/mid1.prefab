@@ -77,6 +77,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   endpoint: {fileID: 5645768840887620610}
+  carPrefab: {fileID: 5725655984933408453, guid: 3c3ee7fa2ae25424a99fbc0bc8a283c3, type: 3}
 --- !u!1 &314378165378336279
 GameObject:
   m_ObjectHideFlags: 0
