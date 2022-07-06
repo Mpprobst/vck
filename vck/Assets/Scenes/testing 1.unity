@@ -1259,7 +1259,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6108980058136377305, guid: 2deae01b8a76a483ba0bbc47217027cf, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -2.6
+      value: -2.47
       objectReference: {fileID: 0}
     - target: {fileID: 6108980058136377305, guid: 2deae01b8a76a483ba0bbc47217027cf, type: 3}
       propertyPath: m_LocalPosition.y
@@ -1359,7 +1359,7 @@ MonoBehaviour:
   m_BlendStyleIndex: 1
   m_FalloffIntensity: 0.5
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 0.09
+  m_Intensity: 0.05
   m_LightVolumeOpacity: 0
   m_ApplyToSortingLayers: 898bccd5
   m_LightCookieSprite: {fileID: 0}
@@ -1983,7 +1983,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1137842946
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1991,18 +1991,18 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1137842945}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 073797afb82c5a1438f328866b10b3f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_LightType: 4
-  m_BlendStyleIndex: 3
+  m_BlendStyleIndex: 0
   m_FalloffIntensity: 0.5
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 0.04
+  m_Intensity: 8.16
   m_LightVolumeOpacity: 0
-  m_ApplyToSortingLayers: 00000000a73e1cb83fbe71d37357792b
+  m_ApplyToSortingLayers: 00000000898bccd5a73e1cb8
   m_LightCookieSprite: {fileID: 0}
   m_UseNormalMap: 0
   m_LightOrder: 2
@@ -2790,7 +2790,7 @@ MonoBehaviour:
   m_BlendStyleIndex: 0
   m_FalloffIntensity: 0.5
   m_Color: {r: 0.5276933, g: 0.48113206, b: 0.6415094, a: 1}
-  m_Intensity: 0.05
+  m_Intensity: 0
   m_LightVolumeOpacity: 0
   m_ApplyToSortingLayers: 00000000898bccd5a73e1cb83fbe71d37357792b
   m_LightCookieSprite: {fileID: 0}
@@ -3368,6 +3368,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
     - target: {fileID: 257177496061110714, guid: f7bba2df781fd493f8c0f0c967a325fa, type: 3}
+      propertyPath: m_Intensity
+      value: 0.86
+      objectReference: {fileID: 0}
+    - target: {fileID: 257177496061110714, guid: f7bba2df781fd493f8c0f0c967a325fa, type: 3}
       propertyPath: m_FalloffIntensity
       value: 0.91
       objectReference: {fileID: 0}
@@ -3441,7 +3445,7 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
     - target: {fileID: 6123105998822016312, guid: f7bba2df781fd493f8c0f0c967a325fa, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6490502122219718790, guid: f7bba2df781fd493f8c0f0c967a325fa, type: 3}
       propertyPath: m_Materials.Array.data[0]
@@ -4200,7 +4204,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &7141264294902607232
 Transform:
   m_ObjectHideFlags: 0
