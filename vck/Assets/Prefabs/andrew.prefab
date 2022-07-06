@@ -527,6 +527,9 @@ MonoBehaviour:
   miscClips:
   - {fileID: 8300000, guid: d4d8e5e369478448cbc886623849fcc7, type: 3}
   - {fileID: 8300000, guid: 33e2bf30a316b4fd9bcae45df490c1f2, type: 3}
+  - {fileID: 8300000, guid: ece5dad0b98b448b19f052184675318d, type: 3}
+  - {fileID: 8300000, guid: f082ac711b828434f9066fb9a0011419, type: 3}
+  - {fileID: 8300000, guid: db57b8d1fd6f144359db4eb844995673, type: 3}
 --- !u!114 &8467196710281894586
 MonoBehaviour:
   m_ObjectHideFlags: 0
