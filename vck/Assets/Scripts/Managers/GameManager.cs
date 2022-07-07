@@ -14,6 +14,7 @@ public class GameManager : MonoBehaviour
     private PlayerController player;
     private EndCutscene endCutscene;
     private int score;
+    private bool gameStarted;
 
     // Start is called before the first frame update
     void Start()
@@ -29,13 +30,23 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if (player != null && !gameStarted)
+        {
+            if (player.GetDistanceTraveled() > 5f)
+            {
+                TutorialManager tutorial = GameObject.FindObjectOfType<TutorialManager>();
+                if (tutorial)
+                    tutorial.TutorialComplete();
+            }
+        }
     }
 
     private void Reset()
     {
-        spawnManager = GameObject.FindObjectOfType<SpawnManager>();
-        spawnManager.BeginSpawning();   // TODO: maybe start spawning after a certain distance has been traveled
+        TutorialManager tutorial = GameObject.FindObjectOfType<TutorialManager>();
+        tutorial.tutorialComplete = new UnityEvent();
+        tutorial.tutorialComplete.AddListener(BeginGame);
+        gameStarted = false;
 
         uiManager = GameObject.FindObjectOfType<UIManager>();
         uiManager.Initialize();
@@ -45,6 +56,13 @@ public class GameManager : MonoBehaviour
         player.Initialize();
 
         endCutscene = GameObject.FindObjectOfType<EndCutscene>();
+    }
+
+    private void BeginGame()
+    {
+        gameStarted = true;
+        spawnManager = GameObject.FindObjectOfType<SpawnManager>();
+        spawnManager.BeginSpawning();   // TODO: maybe start spawning after a certain distance has been traveled
     }
 
     public void AddScore(int points)
