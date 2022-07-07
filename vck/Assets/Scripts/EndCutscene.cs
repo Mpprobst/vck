@@ -16,7 +16,7 @@ public class EndCutscene : MonoBehaviour
     {
         player = GameObject.FindObjectOfType<PlayerController>();
 
-        Vector3 spawnPos = new Vector3(player.transform.position.x-7f, 0, 0);
+        Vector3 spawnPos = new Vector3(player.transform.position.x-7f, 0, 0.1f);    // 0.1f puts this cop car infront of the others
         policeCar = Instantiate(policePrefab, spawnPos, new Quaternion(), foreground).GetComponent<PoliceCar>();
         policeCar.mover = policeCar.gameObject.AddComponent<MoveTowards>();
         policeCar.mover.arrivalDistance = 0.5f;

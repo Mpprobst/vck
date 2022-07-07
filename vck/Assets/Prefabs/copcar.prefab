@@ -406,7 +406,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 729372531
   m_SortingLayer: 4
-  m_SortingOrder: 7
+  m_SortingOrder: 8
   m_Sprite: {fileID: 8282042346942556162, guid: eae16366b3b4c4730b1aa1eb1d7e9694, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -538,7 +538,7 @@ AudioSource:
   m_PlayOnAwake: 0
   m_Volume: 0.25
   m_Pitch: 1
-  Loop: 1
+  Loop: 0
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
