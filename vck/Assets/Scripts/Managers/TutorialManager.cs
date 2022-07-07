@@ -47,7 +47,7 @@ public class TutorialManager : MonoBehaviour
             if (Input.GetButtonDown("Fire1"))
             {
                 step++;
-                Destroy(gameObject);
+                TutorialComplete();
             }
         }
 
