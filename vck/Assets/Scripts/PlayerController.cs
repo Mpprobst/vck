@@ -93,7 +93,7 @@ public class PlayerController : MonoBehaviour
         Vector2 movement = new Vector2(x * speed * Time.deltaTime, 0);
         animator.SetBool(walkAnimName, moving);
 
-        if (Input.GetButtonDown(actionInput))
+        if (Input.GetButtonDown(actionInput) && Time.time-kickTime > kickDelay)
         {
             Kick();
         }
