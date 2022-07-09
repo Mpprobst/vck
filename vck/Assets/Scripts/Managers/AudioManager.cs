@@ -23,7 +23,14 @@ public class AudioManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
+    }
+
+    public float GetMixerVolume(MixerType mix)
+    {
+        float vol = 0f;
+        mixers[(int)mix].GetFloat("volume", out vol);
+        return vol;
     }
 
     public void SetMixerVolume(MixerType mix, float volume)
