@@ -9,19 +9,25 @@ public class SettingsManager : MonoBehaviour
     [SerializeField] GameObject settingsPanel;
     [SerializeField] Slider masterVol, musicVol, ambienceVol, sfxVol;
     [SerializeField] Button backBtn, pauseBtn;
+    [SerializeField] Sprite pauseSprite, playSprite;
 
     private bool paused;
-    private AudioManager audioManger;
+    private AudioManager audioManager;
 
     // Start is called before the first frame update
     void Start()
     {
         settingsPanel.SetActive(false);
-        audioManger = GameObject.FindObjectOfType<AudioManager>();
-        masterVol.value = audioManger.GetMixerVolume(AudioManager.MixerType.MASTER);
-        musicVol.value = audioManger.GetMixerVolume(AudioManager.MixerType.MUSIC);
-        ambienceVol.value = audioManger.GetMixerVolume(AudioManager.MixerType.AMBIENCE);
-        sfxVol.value = audioManger.GetMixerVolume(AudioManager.MixerType.SFX);
+        audioManager = GameObject.FindObjectOfType<AudioManager>();
+        masterVol.value = audioManager.GetMixerVolume(AudioManager.MixerType.MASTER);
+        musicVol.value = audioManager.GetMixerVolume(AudioManager.MixerType.MUSIC);
+        ambienceVol.value = audioManager.GetMixerVolume(AudioManager.MixerType.AMBIENCE);
+        sfxVol.value = audioManager.GetMixerVolume(AudioManager.MixerType.SFX);
+
+        masterVol.onValueChanged.AddListener(MasterChanged);
+        musicVol.onValueChanged.AddListener(MusicChanged);
+        ambienceVol.onValueChanged.AddListener(AmbienceChanged);
+        sfxVol.onValueChanged.AddListener(SFXChanged);
 
         backBtn.onClick.AddListener(Resume);
         pauseBtn.onClick.AddListener(Pause);
@@ -32,6 +38,7 @@ public class SettingsManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.P))
         {
+            Debug.Log("P");
             if (!paused)
                 Pause();
             else
@@ -39,15 +46,37 @@ public class SettingsManager : MonoBehaviour
         }
     }
 
+    private void MasterChanged(float val)
+    {
+        audioManager.SetMixerVolume(AudioManager.MixerType.MASTER, val);
+    }
+
+    private void MusicChanged(float val)
+    {
+        audioManager.SetMixerVolume(AudioManager.MixerType.MUSIC, val);
+    }
+
+    private void AmbienceChanged(float val)
+    {
+        audioManager.SetMixerVolume(AudioManager.MixerType.AMBIENCE, val);
+    }
+
+    private void SFXChanged(float val)
+    {
+        audioManager.SetMixerVolume(AudioManager.MixerType.SFX, val);
+    }
+
     private void Pause()
     {
-        settingsPanel.SetActive(false);
+        settingsPanel.SetActive(true);
+        pauseBtn.GetComponent<Image>().sprite = playSprite;
         Time.timeScale = 0;
     }
 
     private void Resume()
     {
-        settingsPanel.SetActive(false);
+        pauseBtn.GetComponent<Image>().sprite = pauseSprite;
         Time.timeScale = 1f;
+        settingsPanel.SetActive(false);
     }
 }

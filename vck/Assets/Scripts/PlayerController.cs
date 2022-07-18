@@ -73,7 +73,32 @@ public class PlayerController : MonoBehaviour
         if (!canMove) return;
 
         moving = false;
+        bool doKick = Input.GetButtonDown(actionInput);
         float x = Input.GetAxisRaw(horizInput);
+
+        if (Input.touchCount > 0)
+        {
+            doKick = false;
+            Touch touch = Input.GetTouch(0);
+            float width = (float)Screen.width / 2f;
+            float height = (float)Screen.height / 2f;
+            Vector2 pos = touch.position;
+            pos.x = (pos.x - width) / width;
+            //Debug.Log($"Touch pos: {pos} and screen width is {width}");
+            if (pos.x < -0.5f)
+            {
+                x = -1;
+            }
+            else if (pos.x > 0.5f)
+            {
+                x = 1;
+            }
+            else
+            {
+                doKick = true;
+            }
+        }
+
 
         if (Mathf.Abs(x) > 0)
         {
@@ -93,7 +118,7 @@ public class PlayerController : MonoBehaviour
         Vector2 movement = new Vector2(x * speed * Time.deltaTime, 0);
         animator.SetBool(walkAnimName, moving);
 
-        if (Input.GetButtonDown(actionInput) && Time.time-kickTime > kickDelay)
+        if (doKick)
         {
             Kick();
         }
@@ -112,6 +137,7 @@ public class PlayerController : MonoBehaviour
 
     private void Kick()
     {
+        if (Time.time - kickTime < kickDelay) return;
         primarySource.clip = GetRandomClip(kickClips);
         primarySource.Play();
         kickTime = Time.time;
