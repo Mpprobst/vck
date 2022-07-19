@@ -1,0 +1,232 @@
+[33mcommit 9e0e5c1d9f7d7be8be45feb9283903442f8d66a2[m[33m ([m[1;36mHEAD -> [m[1;32mdevelop[m[33m, [m[1;31morigin/develop[m[33m)[m
+Author: Michael Probst <mpprobst@gmail.com>
+Date:   Fri Jul 8 20:36:18 2022 -0400
+
+    Update AudioManager.cs
+
+[33mcommit b452d422f4f70d0982fb473b3e4fe445369c57d6[m
+Author: Michael Probst <mpprobst@gmail.com>
+Date:   Fri Jul 8 20:35:25 2022 -0400
+
+    Add basic settings mennu
+
+[33mcommit 3e9091fac1e983db6453cae322fcd31f3a67db33[m
+Author: Michael Probst <mpprobst@gmail.com>
+Date:   Thu Jul 7 12:34:44 2022 -0400
+
+    Add logos adjust UI and lighting
+
+[33mcommit 744894173fe206a1d0b805e31f81afbccb0a10cb[m
+Author: Michael Probst <mpprobst@gmail.com>
+Date:   Thu Jul 7 00:04:10 2022 -0400
+
+    Bug fix
+    
+    - fixes tutorial end starts game
+    - adjusts headlights
+
+[33mcommit 942a0471c89c81d6787fe352d38c899a1a33b2b7[m
+Merge: b6afc59 a69761b
+Author: Michael Probst <mpprobst@gmail.com>
+Date:   Wed Jul 6 23:56:35 2022 -0400
+
+    Merge branch 'develop' of https://github.com/Mpprobst/vck into develop
+
+[33mcommit b6afc59e0647228f0261400eafa68e6334fe7909[m
+Author: Michael Probst <mpprobst@gmail.com>
+Date:   Wed Jul 6 23:56:32 2022 -0400
+
+    implement tutorial
+
+[33mcommit a69761bf4f76b39bf6576f6b4fb0b74505d42829[m
+Author: Michael Probst <mpprobst@gmail.com>
+Date:   Wed Jul 6 13:52:47 2022 -0400
+
+    22222222222222222222
+
+[33mcommit 86b36968c7f3dbeb947b2f84ec3a105995d1dafb[m
+Author: Michael Probst <mpprobst@gmail.com>
+Date:   Tue Jul 5 22:39:04 2022 -0400
+
+    Update audio and title
+
+[33mcommit e7c084d508469715de7caea0c09c8c6925457715[m
+Author: Michael Probst <mpprobst@gmail.com>
+Date:   Tue Jul 5 21:57:37 2022 -0400
+
+    Add gitignore
+
+[33mcommit b2864635e8619c5694829f00b2be050e8fd7c695[m
+Author: Michael Probst <mpprobst@gmail.com>
+Date:   Tue Jul 5 10:04:33 2022 -0400
+
+    Add more heys
+
+[33mcommit eaee6bdadc4623c501965773bb34bbab37bde720[m
+Author: Michael Probst <mpprobst@gmail.com>
+Date:   Mon Jul 4 13:48:59 2022 -0400
+
+    Audio updates and add photo scene
+
+[33mcommit 37a3a252c58f50f61d17e08c3e0cd62dbca0c606[m
+Author: Michael Probst <mpprobst@gmail.com>
+Date:   Sun Jul 3 14:27:07 2022 -0400
+
+    Add andrew audio
+
+[33mcommit 37db1da276e46e3ec4a54fa05f988a510ae4c725[m
+Merge: b0644cd 6a130d6
+Author: Michael Probst <mpprobst@gmail.com>
+Date:   Sun Jul 3 12:19:59 2022 -0400
+
+    Merge branch 'develop' of https://github.com/Mpprobst/vck into develop
+
+[33mcommit b0644cd275f61f90cdacb5a677fcb76af6ff9f55[m
+Author: Michael Probst <mpprobst@gmail.com>
+Date:   Sun Jul 3 12:17:45 2022 -0400
+
+    add fkface audio
+
+[33mcommit 6a130d619da3d89abbbe1e2142a796c2e3e35c81[m
+Author: Michael Probst <mpprobst@gmail.com>
+Date:   Sun Jul 3 11:07:08 2022 -0400
+
+    add title screen
+
+[33mcommit 5f17e5556e2e722d10093cee5da1e2e3c148ffbf[m
+Author: Michael Probst <mpprobst@gmail.com>
+Date:   Sun Jun 26 12:20:39 2022 -0400
+
+    Add weighted probability environment and flickering lamp
+
+[33mcommit 0b227800252fb674efa3943beaa7c210fc6e77c8[m
+Author: Michael Probst <mpprobst@gmail.com>
+Date:   Thu Jun 23 22:40:39 2022 -0400
+
+    Add placeholder sfx
+
+[33mcommit 08eeb20e3986b47f7ca3b15caa12b68e09038c18[m
+Author: Michael Probst <mpprobst@gmail.com>
+Date:   Mon Jun 13 00:21:31 2022 -0400
+
+    Add environment
+
+[33mcommit 431b2523114a56650fcce8717449118c3b463e14[m
+Author: Michael Probst <mpprobst@gmail.com>
+Date:   Sun Jun 5 01:50:13 2022 -0400
+
+    Add cop car
+
+[33mcommit 7bb43bef977b55d11d51886add601be8dd0b90d7[m
+Author: Michael Probst <mpprobst@gmail.com>
+Date:   Thu Jun 2 19:41:29 2022 -0400
+
+    Add house assets
+
+[33mcommit 09b951f792504f0b0b5e14eb87fcc0a22be5cc2c[m
+Author: Michael Probst <mpprobst@gmail.com>
+Date:   Sun May 29 16:39:19 2022 -0400
+
+    Update sprites and add demon face
+
+[33mcommit e76dd43f2c37414447f5581a46d514e8456f005b[m
+Author: Michael Probst <mpprobst@gmail.com>
+Date:   Sun May 29 11:23:21 2022 -0400
+
+    implement 2d lighting
+
+[33mcommit e77622c3e6adbde72c85c1972806c9f0ee19d5ea[m
+Author: Michael Probst <mpprobst@gmail.com>
+Date:   Sun May 29 10:59:36 2022 -0400
+
+    Add UI and dynamic difficulty
+
+[33mcommit 0860f07454bde44f02fb43027faf9023523ac35b[m
+Author: Michael Probst <mpprobst@gmail.com>
+Date:   Fri May 27 16:59:45 2022 -0400
+
+    Add basic UI
+
+[33mcommit 7ebaaa0721b790f59d6515aa7fb4d1f53c29f09f[m
+Author: Michael Probst <mpprobst@gmail.com>
+Date:   Fri May 27 12:14:44 2022 -0400
+
+    Implement dynamic environment
+
+[33mcommit 4d6f926ba0e57d16167634dfa76110f9718c2bd8[m
+Author: Michael Probst <mpprobst@gmail.com>
+Date:   Tue May 24 01:19:05 2022 -0400
+
+    add basic spawning
+
+[33mcommit dac9653e5c13a3a2072abc9fac56d0ffd6259464[m
+Author: Michael Probst <mpprobst@gmail.com>
+Date:   Thu May 19 09:45:56 2022 -0400
+
+    Add child attacking
+
+[33mcommit 8dda9fb96a8f3e4cc647fddfe9aafab89abb2935[m
+Author: Michael Probst <mpprobst@gmail.com>
+Date:   Sun May 15 10:14:30 2022 -0400
+
+    add child kick
+
+[33mcommit aeb12906e0d19d404794162dc758f8b32915f929[m
+Author: Michael Probst <mpprobst@gmail.com>
+Date:   Fri May 13 07:27:12 2022 -0400
+
+    Implement basic kick
+
+[33mcommit 7e2d58e10ae0473e5eef7b3d07e0aee78ae976f4[m
+Author: Michael Probst <mpprobst@gmail.com>
+Date:   Sun Apr 24 00:49:24 2022 -0400
+
+    add kick to unity
+
+[33mcommit 1e4f289cc2a7caab143098b3dffa12006e0e6f9e[m
+Author: Michael Probst <mpprobst@gmail.com>
+Date:   Sat Apr 23 14:40:54 2022 -0400
+
+    add unity proj
+
+[33mcommit 96880ab92dcf15e606d20e6829578851b9fd4e7c[m
+Author: Michael Probst <mpprobst@gmail.com>
+Date:   Sat Apr 23 14:40:41 2022 -0400
+
+    add child
+
+[33mcommit f584bcabba6da7ea58d3b11aac5be569d5864db5[m
+Author: Michael Probst <mpprobst@gmail.com>
+Date:   Sat Apr 23 14:38:16 2022 -0400
+
+    finish kick
+
+[33mcommit 70422eab27495e0ed9483962ea8b6c364762b128[m
+Author: Michael Probst <mpprobst@gmail.com>
+Date:   Sat Apr 16 13:06:40 2022 -0400
+
+    Begin kick anim
+
+[33mcommit 3c817b21bd43ee74cc8321c9f5c87385568b04ab[m
+Author: Michael Probst <mpprobst@gmail.com>
+Date:   Mon Apr 11 02:40:00 2022 -0400
+
+    finish walk anim
+
+[33mcommit 2e30d08729f36149a0e09d0b399e8bed9835e9dc[m[33m ([m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmaster[m[33m)[m
+Author: Michael Probst <mpprobst@gmail.com>
+Date:   Sun Apr 10 22:32:11 2022 -0400
+
+    create idle start walk
+
+[33mcommit c69cfe8a20e3925e7f200208c9f1d0deeea3fd8f[m
+Author: Michael Probst <mpprobst@gmail.com>
+Date:   Sun Apr 10 12:34:46 2022 -0400
+
+    Add initial artwork
+
+[33mcommit ab3eb68731c4b3c4109c8613e971688ddb70f182[m
+Author: Michael Probst <51172157+Mpprobst@users.noreply.github.com>
+Date:   Sun Apr 10 10:20:07 2022 -0400
+
+    Initial commit
