@@ -7,17 +7,19 @@ using Text = TMPro.TextMeshProUGUI;
 public class SettingsManager : MonoBehaviour
 {
     [SerializeField] GameObject settingsPanel;
-    [SerializeField] Slider masterVol, musicVol, ambienceVol, sfxVol;
+    [SerializeField] Slider masterVol, musicVol, ambienceVol, sfxVol, brightnessSlider;
     [SerializeField] Button backBtn, pauseBtn;
     [SerializeField] Sprite pauseSprite, playSprite;
 
     private bool paused;
     private AudioManager audioManager;
+    private LightingController lighting;
 
     // Start is called before the first frame update
     void Start()
     {
         settingsPanel.SetActive(false);
+
         audioManager = GameObject.FindObjectOfType<AudioManager>();
         masterVol.value = audioManager.GetMixerVolume(AudioManager.MixerType.MASTER);
         musicVol.value = audioManager.GetMixerVolume(AudioManager.MixerType.MUSIC);
@@ -29,8 +31,12 @@ public class SettingsManager : MonoBehaviour
         ambienceVol.onValueChanged.AddListener(AmbienceChanged);
         sfxVol.onValueChanged.AddListener(SFXChanged);
 
-        backBtn.onClick.AddListener(Resume);
-        pauseBtn.onClick.AddListener(Pause);
+        lighting = GameObject.FindObjectOfType<LightingController>();
+        brightnessSlider.value = 1;
+        brightnessSlider.onValueChanged.AddListener(lighting.ChangeLightIntensity);
+
+        backBtn.onClick.AddListener(ToggleTime);
+        pauseBtn.onClick.AddListener(ToggleTime);
     }
 
     // Update is called once per frame
@@ -38,11 +44,7 @@ public class SettingsManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.P))
         {
-            Debug.Log("P");
-            if (!paused)
-                Pause();
-            else
-                Resume();
+            ToggleTime();
         }
     }
 
@@ -66,17 +68,13 @@ public class SettingsManager : MonoBehaviour
         audioManager.SetMixerVolume(AudioManager.MixerType.SFX, val);
     }
 
-    private void Pause()
+    private void ToggleTime()
     {
-        settingsPanel.SetActive(true);
-        pauseBtn.GetComponent<Image>().sprite = playSprite;
-        Time.timeScale = 0;
-    }
-
-    private void Resume()
-    {
-        pauseBtn.GetComponent<Image>().sprite = pauseSprite;
-        Time.timeScale = 1f;
-        settingsPanel.SetActive(false);
+        paused = !paused;
+        settingsPanel.SetActive(paused);
+        pauseBtn.GetComponent<Image>().sprite = paused ? playSprite : pauseSprite;
+        Time.timeScale = paused ? 0 : 1;
+        var system = GameObject.FindObjectOfType<UnityEngine.EventSystems.EventSystem>();
+        system.SetSelectedGameObject(null);
     }
 }

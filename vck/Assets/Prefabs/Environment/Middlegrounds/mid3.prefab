@@ -77,6 +77,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   endpoint: {fileID: 5645768840887620610}
+  carPrefab: {fileID: 0}
 --- !u!1 &314378165378336279
 GameObject:
   m_ObjectHideFlags: 0
@@ -690,6 +691,7 @@ GameObject:
   - component: {fileID: 8790975407602504852}
   - component: {fileID: 7355597674310401187}
   - component: {fileID: 2216524532920638134}
+  - component: {fileID: 8013140481338435453}
   m_Layer: 0
   m_Name: lamp post
   m_TagString: Untagged
@@ -784,6 +786,18 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &8013140481338435453
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6123105998822016312}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5bcbc732e84d1d147b6e7922218cafbe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6212764668333939989
 GameObject:
   m_ObjectHideFlags: 0
