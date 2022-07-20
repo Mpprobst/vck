@@ -34,13 +34,6 @@ public class UIManager : MonoBehaviour
         Reset();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        if (player == null) return;
-        UpdateDistance(player.GetDistanceTraveled());
-    }
-
     public void ShowEndScreen()
     {
         endPanel.SetActive(true);

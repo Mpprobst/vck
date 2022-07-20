@@ -1,0 +1,37 @@
+{
+  "project_info": {
+    "project_number": "753408862966",
+    "firebase_url": "https://vancouverck-3919f-default-rtdb.firebaseio.com",
+    "project_id": "vancouverck-3919f",
+    "storage_bucket": "vancouverck-3919f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:753408862966:ios:07277f1e8b1defe3d89ad7",
+        "android_client_info": {
+          "package_name": "com.MeatyOkraGames.VancouverChildKickerTheGame"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "753408862966-9bogvb58i8gk4g1kdcj29uujprda8mr7.apps.googleusercontent.com"
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAhzil3gx1wgMsZ6wNWo9P2wDWWmd_6iSU"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 0
+        },
+        "appinvite_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

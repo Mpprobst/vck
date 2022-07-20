@@ -11,13 +11,11 @@ public class LightingController : MonoBehaviour
     [SerializeField] Light2D globalLight, backgroundLight;
     private float globalBaseIntensity, backgroundBaseIntensity, intensityMultiplier;
 
-    // Start is called before the first frame update
     void Start()
     {
         if (_instance == null)
             _instance = this;
-        /*else
-            Destroy(this);*/
+       
         globalBaseIntensity = globalLight.intensity;
         backgroundBaseIntensity = backgroundLight.intensity;
         ChangeLightIntensity(1);

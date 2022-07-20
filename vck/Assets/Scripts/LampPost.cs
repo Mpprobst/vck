@@ -14,7 +14,8 @@ public class LampPost : MonoBehaviour
         lampLight = GetComponentInChildren<Light2D>();
         baseIntensity = lampLight.intensity;
 
-        UpdateLightIntensity(LightingController.Instance.GetLightIntensity());
+        if (LightingController.Instance != null)
+            UpdateLightIntensity(LightingController.Instance.GetLightIntensity());
     }
 
     public void UpdateLightIntensity(float multiplier)

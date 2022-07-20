@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>753408862966-9bogvb58i8gk4g1kdcj29uujprda8mr7.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.753408862966-9bogvb58i8gk4g1kdcj29uujprda8mr7</string>
+	<key>API_KEY</key>
+	<string>AIzaSyAhzil3gx1wgMsZ6wNWo9P2wDWWmd_6iSU</string>
+	<key>GCM_SENDER_ID</key>
+	<string>753408862966</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.MeatyOkraGames.VancouverChildKickerTheGame</string>
+	<key>PROJECT_ID</key>
+	<string>vancouverck-3919f</string>
+	<key>STORAGE_BUCKET</key>
+	<string>vancouverck-3919f.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:753408862966:ios:07277f1e8b1defe3d89ad7</string>
+	<key>DATABASE_URL</key>
+	<string>https://vancouverck-3919f-default-rtdb.firebaseio.com</string>
+</dict>
+</plist>

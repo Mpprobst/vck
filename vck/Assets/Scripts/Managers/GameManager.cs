@@ -13,7 +13,7 @@ public class GameManager : MonoBehaviour
     private UIManager uiManager;
     private PlayerController player;
     private EndCutscene endCutscene;
-    private int score;
+    private int score, distance;
     private bool gameStarted;
 
     // Start is called before the first frame update
@@ -30,9 +30,11 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (player != null && !gameStarted)
+        if (player != null)
         {
-            if (player.GetDistanceTraveled() > 5f)
+            distance = player.GetDistanceTraveled();
+            uiManager.UpdateDistance(distance);
+            if (distance > 5f && !gameStarted)
             {
                 TutorialManager tutorial = GameObject.FindObjectOfType<TutorialManager>();
                 if (tutorial)
@@ -77,6 +79,12 @@ public class GameManager : MonoBehaviour
         endCutscene.complete.AddListener(End);
         endCutscene.Play();
         spawnManager.StopSpawning();
+        SubmitScore();
+    }
+
+    public void SubmitScore()
+    {
+        LeaderboardManager.Instance.SubmitScore("fucker", distance, score);
     }
 
     private void End()
@@ -87,6 +95,11 @@ public class GameManager : MonoBehaviour
     public void Retry()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    public void LoadMainMenu()
+    {
+        SceneManager.LoadScene("title");
     }
 
     public void Quit()
