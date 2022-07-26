@@ -7,7 +7,7 @@ using Text = TMPro.TextMeshProUGUI;
 public class SettingsManager : MonoBehaviour
 {
     [SerializeField] GameObject settingsPanel;
-    [SerializeField] Slider masterVol, musicVol, ambienceVol, sfxVol, brightnessSlider;
+    public Slider masterVol, musicVol, ambienceVol, sfxVol, brightnessSlider;
     [SerializeField] Button backBtn, pauseBtn;
     [SerializeField] Sprite pauseSprite, playSprite;
 
@@ -16,7 +16,7 @@ public class SettingsManager : MonoBehaviour
     private LightingController lighting;
 
     // Start is called before the first frame update
-    void Start()
+    public void Initialize()
     {
         settingsPanel.SetActive(false);
 

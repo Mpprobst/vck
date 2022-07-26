@@ -11,7 +11,7 @@ public class LightingController : MonoBehaviour
     [SerializeField] Light2D globalLight, backgroundLight;
     private float globalBaseIntensity, backgroundBaseIntensity, intensityMultiplier;
 
-    void Start()
+    public void Initialize()
     {
         if (_instance == null)
             _instance = this;
@@ -19,6 +19,11 @@ public class LightingController : MonoBehaviour
         globalBaseIntensity = globalLight.intensity;
         backgroundBaseIntensity = backgroundLight.intensity;
         ChangeLightIntensity(1);
+        if (LeaderboardManager.Instance.CurrentUser.HasEntries())
+        {
+            ChangeLightIntensity(LeaderboardManager.Instance.CurrentUser.settings.brightness);
+        }
+
     }
 
     public void ChangeLightIntensity(float val)

@@ -21,15 +21,13 @@ public class UIManager : MonoBehaviour
 
     private void Start()
     {
-        Initialize();
+        //Initialize();
     }
 
     public void Initialize()
     {
         if (_instance == null)
             _instance = this;
-        if (_instance != this)
-            Destroy(this);
 
         Reset();
     }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Events;
+using System.Threading.Tasks;
 
 public class GameManager : MonoBehaviour
 {
@@ -11,6 +12,10 @@ public class GameManager : MonoBehaviour
 
     private SpawnManager spawnManager;
     private UIManager uiManager;
+    private AudioManager audioManager;
+    private LightingController lightingController;
+    private SettingsManager settings;
+
     private PlayerController player;
     private EndCutscene endCutscene;
     private int score, distance;
@@ -25,6 +30,30 @@ public class GameManager : MonoBehaviour
             Destroy(this);
 
         Reset();
+        StartCoroutine(WaitForLeaderboard());
+    }
+
+    private IEnumerator WaitForLeaderboard()
+    {
+        while (LeaderboardManager.Instance == null)
+            yield return new WaitForEndOfFrame();
+        Initialize();
+    }
+
+    private async Task Initialize()
+    {
+        if (LeaderboardManager.Instance.CurrentUser == null)
+        {
+            await LeaderboardManager.Instance.Initialize();
+        }
+
+        audioManager = GameObject.FindObjectOfType<AudioManager>();
+        lightingController = GameObject.FindObjectOfType<LightingController>();
+        settings = GameObject.FindObjectOfType<SettingsManager>();
+        
+        audioManager.Initialize();
+        lightingController.Initialize();
+        settings.Initialize();
     }
 
     // Update is called once per frame
@@ -64,7 +93,7 @@ public class GameManager : MonoBehaviour
     {
         gameStarted = true;
         spawnManager = GameObject.FindObjectOfType<SpawnManager>();
-        spawnManager.BeginSpawning();   // TODO: maybe start spawning after a certain distance has been traveled
+        spawnManager.BeginSpawning();
     }
 
     public void AddScore(int points)
@@ -75,16 +104,17 @@ public class GameManager : MonoBehaviour
 
     public void GameOver()
     {
+        SubmitScore();  // TODO: move this to a method accessible after entering a username
+        LeaderboardManager.Instance.UpdatePlayerStats(player.ChildrenKicked, player.DemonsVanquished);
         endCutscene.complete = new UnityEvent();
         endCutscene.complete.AddListener(End);
         endCutscene.Play();
         spawnManager.StopSpawning();
-        SubmitScore();
     }
 
     public void SubmitScore()
     {
-        LeaderboardManager.Instance.SubmitScore("fucker", distance, score);
+        LeaderboardManager.Instance.SubmitScore("vpn", distance, score);
     }
 
     private void End()

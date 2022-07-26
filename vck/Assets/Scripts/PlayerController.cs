@@ -38,6 +38,10 @@ public class PlayerController : MonoBehaviour
     private float kickDelay = 0.5f;
     private Vector3 startPos;
 
+    public int ChildrenKicked { get { return childrenKicked; } }
+    public int DemonsVanquished { get { return demonsVanquished; } }
+    private int childrenKicked, demonsVanquished;
+
     private void Start()
     {
         //Initialize();
@@ -65,6 +69,8 @@ public class PlayerController : MonoBehaviour
         canMove = true;
         secondarySource.clip = GetRandomClip(startClips);
         secondarySource.PlayDelayed(1f);
+        childrenKicked = 0;
+        demonsVanquished = 0;
     }
 
     // Update is called once per frame
@@ -155,11 +161,13 @@ public class PlayerController : MonoBehaviour
                 secondarySource.clip = GetRandomClip(failClips);
                 health.Damage(1);
                 GameManager.Instance.AddScore(-1000);
+                childrenKicked++;
             }
             else
             {
                 secondarySource.clip = GetRandomClip(successClips);
                 GameManager.Instance.AddScore(500);
+                demonsVanquished++;
             }
             secondarySource.PlayDelayed(1f);
         }

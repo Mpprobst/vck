@@ -10,15 +10,16 @@ public class AudioManager : MonoBehaviour
 
 
     // Start is called before the first frame update
-    void Start()
+    public void Initialize()
     {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
+        if (LeaderboardManager.Instance.CurrentUser.HasEntries())
+        {
+            // set volumes based on user profile
+            SetMixerVolume(MixerType.MASTER, LeaderboardManager.Instance.CurrentUser.settings.master);
+            SetMixerVolume(MixerType.MUSIC, LeaderboardManager.Instance.CurrentUser.settings.music);
+            SetMixerVolume(MixerType.AMBIENCE, LeaderboardManager.Instance.CurrentUser.settings.ambience);
+            SetMixerVolume(MixerType.SFX, LeaderboardManager.Instance.CurrentUser.settings.sfx);
+        }
     }
 
     public float GetMixerVolume(MixerType mix)
