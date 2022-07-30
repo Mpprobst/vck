@@ -77,7 +77,17 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         if (!canMove) return;
-
+        if (Debug.isDebugBuild)
+        {
+            if (Input.GetKeyDown(KeyCode.Alpha1))
+            {
+                health.Damage(1);
+            }
+            else if (Input.GetKeyDown(KeyCode.Alpha2))
+            {
+                GameManager.Instance.AddScore(500);
+            }
+        }
         moving = false;
         bool doKick = Input.GetButtonDown(actionInput);
         float x = Input.GetAxisRaw(horizInput);

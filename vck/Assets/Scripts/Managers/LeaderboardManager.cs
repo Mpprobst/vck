@@ -9,15 +9,17 @@ using System.Text.RegularExpressions;
 using System.Net;
 using System.Security.Cryptography;
 using System.Linq;
-
+using UnityEngine.UI;
+using Text = TMPro.TextMeshProUGUI;
 
 [System.Serializable]
 public class UserData
 {
     public UserSettings settings;
-    public ScoreData[] profiles;    // max 3
+    public ScoreData[] profiles;
     public int childrenKicked, demonsVanquished;
     public bool authenticated;
+
     public bool HasEntries()
     {
         return profiles.Length > 0;
@@ -61,11 +63,14 @@ public class LeaderboardManager : MonoBehaviour
     public int maxKeyLength = 16;
     public int maxProfiles;
 
+    [SerializeField] private Text totalKickText, totalKillText, maxDistText, maxScoreText;
+    [SerializeField] private Transform profilesPanel;
+    private List<LeaderboardElement> profileElements;
+
     FirebaseDatabase _database;
     FirebaseAuth _auth;
     private string playerKey = "F**KFACE";
     private string ip = "";
-    private string username;
 
     public UserData CurrentUser { get { return currentUser; } }
     private UserData currentUser;
@@ -74,12 +79,18 @@ public class LeaderboardManager : MonoBehaviour
     private string adminUser = "admin@vck.org";
     private string adminKey = "tH!sI$Ahe!n0u$@uthKeYG00DLucKf**k3r$";
 
+    private Transform leaderboardPanel;
+    private GameObject leaderboardElementPrefab;
+    private List<LeaderboardElement> leaderboardElements;
+    private bool sortMethod;
+
     private void Start()
     {
         if (_instance == null)
         {
             _instance = this;
             DontDestroyOnLoad(gameObject);
+            if (!initialized) Initialize();
         }
         else
         {
@@ -100,19 +111,25 @@ public class LeaderboardManager : MonoBehaviour
         ip = Dns.GetHostEntry(hostName).AddressList[0].ToString();
         GenerateKey();
 
-        bool newUser = true;
-        currentUser = await GetUserData();
-        if (currentUser != null )
+        bool newUser = false;
+        if (currentUser == null)
+            currentUser = await GetUserData();
+        if (currentUser != null)
         {
             if (!currentUser.authenticated)
             {
-                newUser = false;
+                newUser = true;
             }
+        }
+        else
+        {
+            newUser = true;
         }
 
         if (newUser)
         {
             currentUser = new UserData();
+            currentUser.authenticated = true;
             await _database.GetReference(playerKey).SetRawJsonValueAsync(JsonUtility.ToJson(currentUser));
         }
 
@@ -145,8 +162,8 @@ public class LeaderboardManager : MonoBehaviour
 
     public List<ScoreData> OrderHighScores(List<ScoreData> highscores, bool byScore = true)
     {
-        if (byScore) return highscores.OrderBy(h => h.score).ToList();
-        else return highscores.OrderBy(h => h.distance).ToList();
+        if (byScore) return highscores.OrderByDescending(h => h.score).ToList();
+        else return highscores.OrderByDescending(h => h.distance).ToList();
     }
 
     public async void UpdatePlayerStats(int childrenKicked, int demonsVanquished)
@@ -157,14 +174,72 @@ public class LeaderboardManager : MonoBehaviour
         //await _database.GetReference(playerKey).SetRawJsonValueAsync(JsonUtility.ToJson(currentUser));
     }
 
-    public async void SubmitScore(string name, int dist, int score)
+    public async Task<int> SetUsername(string user)
     {
-        if (!await SetUsername(name)) return;
-        var fireuser = await _auth.SignInWithEmailAndPasswordAsync(adminUser, adminKey);
+        int id = -1;
 
-        int profileIdx = currentUser.profiles.Length;
-        currentUser.authenticated = true;
-        if (currentUser.profiles.Length >= maxProfiles)
+        if (user.Length > maxKeyLength)
+        {
+            ReportWarning($"name exceeds maximum length ({maxKeyLength})");
+            return -1;
+        }
+
+        Regex whitespace = new Regex(@"[-_.\s]");
+        string cleanedUsername = whitespace.Replace(user, "");
+        Regex replaceA = new Regex(@"[4@]");
+        cleanedUsername = replaceA.Replace(cleanedUsername, "a");
+        Regex replaceE = new Regex(@"[3]");
+        cleanedUsername = replaceE.Replace(cleanedUsername, "e");
+        Regex replaceI = new Regex(@"[!1]");
+        cleanedUsername = replaceI.Replace(cleanedUsername, "i");
+        Regex replaceO = new Regex(@"[0]");
+        cleanedUsername = replaceO.Replace(cleanedUsername, "o");
+        Regex replaceH = new Regex(@"[#]");
+        cleanedUsername = replaceH.Replace(cleanedUsername, "h");
+        Regex replaceS = new Regex(@"[$5]");
+        cleanedUsername = replaceS.Replace(cleanedUsername, "s");
+        Regex replaceG = new Regex(@"[96]");
+        cleanedUsername = replaceG.Replace(cleanedUsername, "g");
+
+        Debug.Log($"\'{user}\' cleaned: \'{cleanedUsername}\'");
+
+        string invalidChars = @"[?/\|:;]";
+        Regex charCheck = new Regex(invalidChars);
+        if (charCheck.IsMatch(cleanedUsername))
+        {
+            ReportWarning($"Illegal characters found in \'{user}\'");
+            return -1;
+        }
+
+        string[] offensiveWords = { "d(i|y)ke", "fag+(s|ot|y|ier)", "gooks", "kikes", "ni?g+(a|er)", "shemale", "spick", "beaner", "trann(ie|y)", "hooknose" };
+        string pattern = @"(";
+        foreach (var slur in offensiveWords) pattern += $"{slur}|";
+        pattern = pattern.Substring(0, pattern.Length - 1);
+        pattern += ")";
+
+        Regex offensiveRegex = new Regex(pattern, RegexOptions.IgnoreCase);
+        if (offensiveRegex.IsMatch(cleanedUsername))
+        {
+            ReportWarning($"Hey, that's not a cool username.");
+            return -1;
+        }
+
+        var highscores = await GetHighscores();
+        for (int i = 0; i < highscores.Count; i++)
+        {
+            for (int j = 0; j < currentUser.profiles.Length; j++)
+                if (currentUser.profiles[j].name == user)
+                    return j;
+            if (user == highscores[i].name && id < 0)
+            {
+                ReportWarning($"Cannot use {user}. It is already in use");
+                return -1;
+            }
+        }
+
+        // username is new, choose next available slot in profiles
+        id = currentUser.profiles.Length;
+        if (id >= maxProfiles)
         {
             int bestDist = 0;
             int bestScore = 0;
@@ -183,30 +258,45 @@ public class LeaderboardManager : MonoBehaviour
                     scoreIdx = i;
                 }
             }
+
             List<int> availableInts = new List<int>();
             availableInts.Add(0);
             availableInts.Add(1);
             availableInts.Add(2);
             availableInts.Remove(distIdx);
             availableInts.Remove(scoreIdx);
-            profileIdx = availableInts[0];
+            id = availableInts[0];
+            currentUser.profiles[id] = new ScoreData();
         }
-        else
+        else // add new profile
         {
-            ScoreData[] scores = new ScoreData[currentUser.profiles.Length + 1];
+            ScoreData[] scores = currentUser.profiles;
+            scores = new ScoreData[currentUser.profiles.Length + 1];
             for (int i = 0; i < currentUser.profiles.Length; i++)
                 scores[i] = currentUser.profiles[i];
+
             currentUser.profiles = scores;
         }
+        if (playerKey == "")
+            GenerateKey();
+
+        return id;
+    }
+
+    public async void SubmitScore(string name, int dist, int score)
+    {
+        int profileIdx = await SetUsername(name);
+        if (0 > profileIdx) return;
+        var fireuser = await _auth.SignInWithEmailAndPasswordAsync(adminUser, adminKey);
 
         ScoreData scoreEntry = currentUser.profiles[profileIdx];
         if (scoreEntry == null) scoreEntry = new ScoreData();
-        scoreEntry.name = username;
+        scoreEntry.name = name;
         if (dist > scoreEntry.distance) scoreEntry.distance = dist;
         if (score > scoreEntry.score) scoreEntry.score = score;
         currentUser.profiles[profileIdx] = scoreEntry;
 
-        SettingsManager settings = GameObject.FindObjectOfType<SettingsManager>();
+        SettingsManager settings = SettingsManager.Instance;
         currentUser.settings.master = settings.masterVol.value;
         currentUser.settings.music = settings.musicVol.value;
         currentUser.settings.ambience = settings.ambienceVol.value;
@@ -215,6 +305,8 @@ public class LeaderboardManager : MonoBehaviour
         Debug.Log($"Submiting score {scoreEntry.name} - dist: {scoreEntry.distance} score: {scoreEntry.score}");
         await _database.GetReference(playerKey).SetRawJsonValueAsync(JsonUtility.ToJson(currentUser));
         _auth.SignOut();
+
+        await PopulateLeaderboard(leaderboardPanel, leaderboardElementPrefab, sortMethod);
     }
 
     private static byte[] GetHash(string inputString)
@@ -238,44 +330,57 @@ public class LeaderboardManager : MonoBehaviour
         playerKey = hash;
     }
 
-    public async Task<bool> SetUsername(string user)
+    private void ReportWarning(string message)
     {
-        bool valid = true;
-        if (user.Contains('/')) valid = false;
-        if (user.Contains('\\')) valid = false;
-        if (user.Contains('%')) valid = false;
-        if (user.Contains('&')) valid = false;
+        UIManager.Instance.ShowWarning(message);
+        Debug.LogWarning(message);
+    }
 
-        if (!valid)
-        {
-            Debug.LogWarning($"{user} has illegal characters");
-            return false;
-        }
-
-        if (user.Length > maxKeyLength)
-        {
-            Debug.LogWarning($"{user} exceeds maximum length ({maxKeyLength})");
-            return false;
-        }
-
+    public async Task PopulateLeaderboard(Transform panel, GameObject prefab, bool orderByScore)
+    {
+        if (panel == null || prefab == null) return;
+        sortMethod = orderByScore;
+        leaderboardPanel = panel;
+        leaderboardElementPrefab = prefab;
+        // TODO: fix element duplication bug. Seems like this function is being called twice
+        if (leaderboardElements != null)
+            foreach (var element in leaderboardElements)
+                if (element != null)
+                    Destroy(element.gameObject);
+        leaderboardElements = new List<LeaderboardElement>();
         var highscores = await GetHighscores();
+        highscores = OrderHighScores(highscores, orderByScore);
         for (int i = 0; i < highscores.Count; i++)
         {
-            bool usersName = false;
-            foreach (var profile in currentUser.profiles)
-                if (profile.name == user)
-                    usersName = true;
-            if (user == highscores[i].name && !usersName)
-            {
-                Debug.LogWarning($"Cannot use {user}. It is already in use");
-                return false;
-            }
+            // TODO: show the top 5 then ... then the 3 nearest the user's highest score/dist
+            var element = Instantiate(prefab, panel).GetComponent<LeaderboardElement>();
+            var score = highscores[i];
+            element.Initialize(i + 1, score.name, orderByScore ? score.score.ToString() : score.distance.ToString() + "m");
+            leaderboardElements.Add(element);
         }
-        username = user;
-        if (playerKey == "")
-            GenerateKey();
 
-        return true;
+        if (profileElements != null)
+            foreach (var prof in profileElements)
+                if (prof)
+                    Destroy(prof.gameObject);
+        profileElements = new List<LeaderboardElement>();
+
+        int bestDist = 0;
+        int bestScore = 0;
+        for (int i = 0; i < currentUser.profiles.Length; i++)
+        {
+            var element = Instantiate(leaderboardElementPrefab, profilesPanel).GetComponent<LeaderboardElement>();
+            var prof = currentUser.profiles[i];
+            element.Initialize(i + 1, prof.name, $"<b>{prof.distance}m</b> - <b>{prof.score}</b>");
+            profileElements.Add(element);
+            if (prof.distance > bestDist) bestDist = prof.distance;
+            if (prof.score > bestScore) bestScore = prof.score;
+        }
+        totalKickText.text = currentUser.childrenKicked.ToString();
+        totalKillText.text = currentUser.demonsVanquished.ToString();
+
+        maxDistText.text = bestDist.ToString();
+        maxScoreText.text = bestScore.ToString();
     }
 
     private void OnApplicationQuit()

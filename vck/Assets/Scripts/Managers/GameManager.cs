@@ -104,7 +104,6 @@ public class GameManager : MonoBehaviour
 
     public void GameOver()
     {
-        SubmitScore();  // TODO: move this to a method accessible after entering a username
         LeaderboardManager.Instance.UpdatePlayerStats(player.ChildrenKicked, player.DemonsVanquished);
         endCutscene.complete = new UnityEvent();
         endCutscene.complete.AddListener(End);
@@ -112,9 +111,9 @@ public class GameManager : MonoBehaviour
         spawnManager.StopSpawning();
     }
 
-    public void SubmitScore()
+    public void SubmitScore(string username)
     {
-        LeaderboardManager.Instance.SubmitScore("vpn", distance, score);
+        LeaderboardManager.Instance.SubmitScore(username, distance, score);
     }
 
     private void End()

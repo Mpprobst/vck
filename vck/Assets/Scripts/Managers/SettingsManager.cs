@@ -6,6 +6,9 @@ using Text = TMPro.TextMeshProUGUI;
 
 public class SettingsManager : MonoBehaviour
 {
+    public static SettingsManager Instance { get { return _instance; } }
+    private static SettingsManager _instance;
+
     [SerializeField] GameObject settingsPanel;
     public Slider masterVol, musicVol, ambienceVol, sfxVol, brightnessSlider;
     [SerializeField] Button backBtn, pauseBtn;
@@ -18,6 +21,9 @@ public class SettingsManager : MonoBehaviour
     // Start is called before the first frame update
     public void Initialize()
     {
+        if (_instance == null)
+            _instance = this;
+
         settingsPanel.SetActive(false);
 
         audioManager = GameObject.FindObjectOfType<AudioManager>();
@@ -42,7 +48,7 @@ public class SettingsManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.P))
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
             ToggleTime();
         }

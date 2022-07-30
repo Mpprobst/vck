@@ -9,12 +9,13 @@ public class UIManager : MonoBehaviour
     public static UIManager Instance { get { return _instance; } }
     private static UIManager _instance;
 
-    [SerializeField] private Text score;
-    [SerializeField] private Text distance;
+    [SerializeField] private Text score, distance, endScore, endDist, warningText, distOrScoreText;
     [SerializeField] private GameObject endPanel;
-    [SerializeField] private Button retryButton, quitButton;
-    [SerializeField] private Transform health;  // must have horiz layout
-    [SerializeField] private GameObject healthPrefab;
+    [SerializeField] private Button retryButton, quitButton, submitScoreButton;
+    [SerializeField] private Transform health, leaderboardContent;  // must have horiz layout
+    [SerializeField] private GameObject healthPrefab, leaderboardElementPrefab;
+    [SerializeField] private TMPro.TMP_InputField usernameInput;
+    [SerializeField] private Toggle scoreDistToggle;
     private List<GameObject> healthIcons;
 
     private PlayerController player;
@@ -29,6 +30,11 @@ public class UIManager : MonoBehaviour
         if (_instance == null)
             _instance = this;
 
+        submitScoreButton.onClick = new Button.ButtonClickedEvent();
+        submitScoreButton.onClick.AddListener(SubmitScorePressed);
+        scoreDistToggle.onValueChanged = new Toggle.ToggleEvent();
+        scoreDistToggle.onValueChanged.AddListener(LoadLeaderboard);
+
         Reset();
     }
 
@@ -37,10 +43,20 @@ public class UIManager : MonoBehaviour
         endPanel.SetActive(true);
         Animator endScreenAnimator = endPanel.GetComponent<Animator>();
         // TODO: animate end screen
+        endScore.text = score.text;
+        endDist.text = distance.text;
+        LoadLeaderboard(false);
+    }
+
+    public void LoadLeaderboard(bool orderByScore)
+    {
+        LeaderboardManager.Instance.PopulateLeaderboard(leaderboardContent, leaderboardElementPrefab, orderByScore);
+        distOrScoreText.text = orderByScore ? "SCORE" : "DIST";
     }
 
     public void Reset()
     {
+        ShowWarning("");
         endPanel.SetActive(false);
         player = GameObject.FindObjectOfType<PlayerController>();
     }
@@ -78,5 +94,25 @@ public class UIManager : MonoBehaviour
         if (healthIcons.Count == 0) return;
         Destroy(healthIcons[healthIcons.Count - 1]);
         healthIcons.RemoveAt(healthIcons.Count - 1);
+    }
+
+    private void SubmitScorePressed()
+    {
+        if (usernameInput.text != "")
+            GameManager.Instance.SubmitScore(usernameInput.text);
+    }
+
+    public void ShowWarning(string message)
+    {
+        StartCoroutine(WarningFlash(message));
+    }
+
+    private IEnumerator WarningFlash(string message)
+    {
+        warningText.text = message;
+        warningText.color = Color.red;
+        yield return new WaitForSecondsRealtime(2f);
+        warningText.text = "";
+        warningText.color = Color.black;
     }
 }

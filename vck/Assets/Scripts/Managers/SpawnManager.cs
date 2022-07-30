@@ -41,12 +41,14 @@ public class SpawnManager : MonoBehaviour
 
         if (Time.time - lastSpawnTime > spawnDelay)
         {
+            EntityDestroyed(false);
             SpawnEntity();
         }
     }
 
     private void SpawnEntity()
     {
+        maxEntities = Mathf.RoundToInt(DifficultyManager.Instance.Difficulty * 2);
         lastSpawnTime = Time.time;
         if (spawnedEntities.Count >= maxEntities) return;
 
