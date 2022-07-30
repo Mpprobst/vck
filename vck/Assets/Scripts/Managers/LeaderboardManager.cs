@@ -89,12 +89,7 @@ public class LeaderboardManager : MonoBehaviour
         if (_instance == null)
         {
             _instance = this;
-            DontDestroyOnLoad(gameObject);
             if (!initialized) Initialize();
-        }
-        else
-        {
-            Destroy(gameObject);
         }
     }
 
@@ -211,7 +206,7 @@ public class LeaderboardManager : MonoBehaviour
             return -1;
         }
 
-        string[] offensiveWords = { "d(i|y)ke", "fag+(s|ot|y|ier)", "gooks", "kikes", "ni?g+(a|er)", "shemale", "spick", "beaner", "trann(ie|y)", "hooknose" };
+        string[] offensiveWords = { "d(i|y)ke", "fag+(s|ot|y|ier)", "gooks", "kikes", "ni?g+(a|er)", "shemale", "spick", "beaner", "trann(ie|y)", "hooknose", "cunt" };
         string pattern = @"(";
         foreach (var slur in offensiveWords) pattern += $"{slur}|";
         pattern = pattern.Substring(0, pattern.Length - 1);
@@ -338,26 +333,11 @@ public class LeaderboardManager : MonoBehaviour
 
     public async Task PopulateLeaderboard(Transform panel, GameObject prefab, bool orderByScore)
     {
+        Debug.Log("populating leaderboard");
         if (panel == null || prefab == null) return;
         sortMethod = orderByScore;
         leaderboardPanel = panel;
         leaderboardElementPrefab = prefab;
-        // TODO: fix element duplication bug. Seems like this function is being called twice
-        if (leaderboardElements != null)
-            foreach (var element in leaderboardElements)
-                if (element != null)
-                    Destroy(element.gameObject);
-        leaderboardElements = new List<LeaderboardElement>();
-        var highscores = await GetHighscores();
-        highscores = OrderHighScores(highscores, orderByScore);
-        for (int i = 0; i < highscores.Count; i++)
-        {
-            // TODO: show the top 5 then ... then the 3 nearest the user's highest score/dist
-            var element = Instantiate(prefab, panel).GetComponent<LeaderboardElement>();
-            var score = highscores[i];
-            element.Initialize(i + 1, score.name, orderByScore ? score.score.ToString() : score.distance.ToString() + "m");
-            leaderboardElements.Add(element);
-        }
 
         if (profileElements != null)
             foreach (var prof in profileElements)
@@ -365,22 +345,93 @@ public class LeaderboardManager : MonoBehaviour
                     Destroy(prof.gameObject);
         profileElements = new List<LeaderboardElement>();
 
+        // Show user stats
         int bestDist = 0;
         int bestScore = 0;
+        int distIdx = 0;
+        int scoreIdx = 0;
         for (int i = 0; i < currentUser.profiles.Length; i++)
         {
             var element = Instantiate(leaderboardElementPrefab, profilesPanel).GetComponent<LeaderboardElement>();
             var prof = currentUser.profiles[i];
             element.Initialize(i + 1, prof.name, $"<b>{prof.distance}m</b> - <b>{prof.score}</b>");
             profileElements.Add(element);
-            if (prof.distance > bestDist) bestDist = prof.distance;
-            if (prof.score > bestScore) bestScore = prof.score;
+            if (prof.distance > bestDist)
+            {
+                distIdx = i;
+                bestDist = prof.distance;
+            }
+            if (prof.score > bestScore)
+            {
+                scoreIdx = i;
+                bestScore = prof.score;
+            }
         }
         totalKickText.text = currentUser.childrenKicked.ToString();
         totalKillText.text = currentUser.demonsVanquished.ToString();
 
         maxDistText.text = bestDist.ToString();
         maxScoreText.text = bestScore.ToString();
+
+        // Populate the leaderboard
+        if (leaderboardElements != null)
+            foreach (var element in leaderboardElements)
+                if (element != null)
+                    Destroy(element.gameObject);
+        leaderboardElements = new List<LeaderboardElement>();
+
+        int profileIdx = orderByScore ? scoreIdx : distIdx;
+        string profileName = currentUser.profiles[profileIdx].name;
+
+        var highscores = await GetHighscores();
+        int top = 5;
+        int playerRank = -1;
+        highscores = OrderHighScores(highscores, orderByScore);
+        for (int i = 0; i < highscores.Count; i++)
+        {
+            if (highscores[i].name == profileName)
+                playerRank = i;
+            if (i < top)
+            {
+                var score = highscores[i];
+                var element = Instantiate(prefab, panel).GetComponent<LeaderboardElement>();
+                element.Initialize(i + 1, score.name, orderByScore ? score.score.ToString() : score.distance.ToString() + "m", playerRank == i);
+                leaderboardElements.Add(element);
+            }
+        }
+
+        if (playerRank >= top)
+        {
+            int prev = playerRank - 1;
+            if (prev < top)
+            {
+                var elip = Instantiate(prefab, panel).GetComponent<LeaderboardElement>();
+                elip.Initialize(-1, "...", "");
+                leaderboardElements.Add(elip);
+            }
+            for (int i = playerRank - 1; i <= playerRank + 1; i++)
+            {
+                if (i < highscores.Count)
+                {
+                    var score = highscores[i];
+                    var element = Instantiate(prefab, panel).GetComponent<LeaderboardElement>();
+                    element.Initialize(i + 1, score.name, orderByScore ? score.score.ToString() : score.distance.ToString() + "m", i == playerRank);
+                    leaderboardElements.Add(element);
+                }
+            }
+        }
+
+        if (playerRank != highscores.Count - 1)
+        {
+            var elipses = Instantiate(prefab, panel).GetComponent<LeaderboardElement>();
+            elipses.Initialize(-1, "...", "");
+            leaderboardElements.Add(elipses);
+
+            var worstScore = highscores[highscores.Count - 1];
+            var worstElement = Instantiate(prefab, panel).GetComponent<LeaderboardElement>();
+            worstElement.Initialize(highscores.Count, worstScore.name, orderByScore ? worstScore.score.ToString() : worstScore.distance.ToString() + "m");
+            leaderboardElements.Add(worstElement);
+        }
     }
 
     private void OnApplicationQuit()
