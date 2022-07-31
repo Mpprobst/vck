@@ -1,8 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Firebase.Database;
-using Firebase.Auth;
+//using Firebase.Database;
+//using Firebase.Auth;
 using System.Threading.Tasks;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -11,6 +11,7 @@ using System.Security.Cryptography;
 using System.Linq;
 using UnityEngine.UI;
 using Text = TMPro.TextMeshProUGUI;
+using FirebaseWebGL.Scripts.FirebaseBridge;
 
 [System.Serializable]
 public class UserData
@@ -67,8 +68,8 @@ public class LeaderboardManager : MonoBehaviour
     [SerializeField] private Transform profilesPanel;
     private List<LeaderboardElement> profileElements;
 
-    FirebaseDatabase _database;
-    FirebaseAuth _auth;
+    //FirebaseDatabase _database;
+    //FirebaseAuth _auth;
     private string playerKey = "F**KFACE";
     private string ip = "";
 
@@ -77,9 +78,11 @@ public class LeaderboardManager : MonoBehaviour
     private bool initialized;
     private string myUsername;
 
+    private string firebaseRoot = "https://vancouverck-3919f-default-rtdb.firebaseio.com/";
     private string adminUser = "admin@vck.org";
     private string adminKey = "tH!sI$Ahe!n0u$@uthKeYG00DLucKf**k3r$";
 
+    private List<ScoreData> highscores;
     private Transform leaderboardPanel;
     private GameObject leaderboardElementPrefab;
     private List<LeaderboardElement> leaderboardElements;
@@ -97,19 +100,24 @@ public class LeaderboardManager : MonoBehaviour
     public async Task Initialize()
     {
         initialized = true;
-        _auth = FirebaseAuth.DefaultInstance;
-        await _auth.SignInWithEmailAndPasswordAsync(adminUser, adminKey);
+        //_auth = FirebaseAuth.DefaultInstance;
+        FirebaseAuth.SignInWithEmailAndPassword(adminUser, adminKey, name, "AuthLoginCallback", "");
         // This should prevent outside users from modifying the database
         // TODO: do something if admin login fails. Just disable all features and don't try to query
 
-        _database = FirebaseDatabase.DefaultInstance;
+        //_database = FirebaseDatabase.DefaultInstance;
         string hostName = Dns.GetHostName();
         ip = Dns.GetHostEntry(hostName).AddressList[0].ToString();
         GenerateKey();
 
         bool newUser = false;
         if (currentUser == null)
-            currentUser = await GetUserData();
+        {
+            //currentUser = GetUserData();
+            UpdateUserData();
+            while (currentUser == null)
+                await Task.Delay(0);
+        }
         if (currentUser != null)
         {
             if (!currentUser.authenticated)
@@ -126,20 +134,67 @@ public class LeaderboardManager : MonoBehaviour
         {
             currentUser = new UserData();
             currentUser.authenticated = true;
-            await _database.GetReference(playerKey).SetRawJsonValueAsync(JsonUtility.ToJson(currentUser));
+            FirebaseDatabase.PostJSON(firebaseRoot+playerKey, JsonUtility.ToJson(currentUser), name, "DatabasePostCallback", "");
+            //await _database.GetReference(playerKey).SetRawJsonValueAsync(JsonUtility.ToJson(currentUser));
         }
 
-        _auth.SignOut();
+        //_auth.SignOut();
+    }
+    #region FBWebGL
+    private void AuthLoginCallback(string output)
+    {
+        Debug.Log("Login callback message: "+output);
     }
 
-    private async Task<UserData> GetUserData()
+    private void UpdateUserData()
+    {
+        FirebaseDatabase.GetJSON(playerKey, name, "DatabaseGetCallback", "");
+    }
+    
+    private void DatabaseGetUserCallback(string output)
+    {
+        UserData user = JsonUtility.FromJson<UserData>(output);
+    }
+
+    private void DatabasePostCallback(string output)
+    {
+        Debug.Log("Post callback: " + output);
+    }
+
+    public void GetHighscores()
+    {
+        FirebaseDatabase.GetJSON(firebaseRoot, name, "DatabaseGetScoresCallback", "");
+    }
+
+    private void DatabaseGetScoresCallback(string output)
+    {
+        var dbData = JsonUtility.FromJson<object>(output);
+        var allUsers = JsonUtility.FromJson<List<UserData>>(output);
+        highscores = new List<ScoreData>();
+        foreach (var user in allUsers)
+        {
+            foreach (var score in user.profiles)
+                if (score != null)
+                    highscores.Add(score);
+        }
+        /*foreach (var child in dbData.Children)
+        {
+            UserData user = JsonUtility.FromJson<UserData>(child.GetRawJsonValue());
+            var json = child.GetRawJsonValue();
+            foreach (var score in user.profiles)
+                if (score != null)
+                    highscores.Add(score);
+        }*/
+    }
+    #endregion
+    /*private async Task<UserData> GetUserData()
     {
         var userEntry = await _database.GetReference(playerKey).GetValueAsync();
         UserData user = JsonUtility.FromJson<UserData>(userEntry.GetRawJsonValue());
         return user;
-    }
+    }*/
 
-    public async Task<List<ScoreData>> GetHighscores()
+    /*public async Task<List<ScoreData>> GetHighscores()
     {
         await _auth.SignInWithEmailAndPasswordAsync(adminUser, adminKey);
         List<ScoreData> highscores = new List<ScoreData>();
@@ -152,9 +207,9 @@ public class LeaderboardManager : MonoBehaviour
                 if (score != null)
                     highscores.Add(score);
         }
-        _auth.SignOut();
+        //_auth.SignOut();
         return highscores;
-    }
+    }*/
 
     public List<ScoreData> OrderHighScores(List<ScoreData> highscores, bool byScore = true)
     {
@@ -162,12 +217,10 @@ public class LeaderboardManager : MonoBehaviour
         else return highscores.OrderByDescending(h => h.distance).ToList();
     }
 
-    public async void UpdatePlayerStats(int childrenKicked, int demonsVanquished)
+    public void UpdatePlayerStats(int childrenKicked, int demonsVanquished)
     {
-        // get lifetime stats and add these values to them
         currentUser.childrenKicked += childrenKicked;
         currentUser.demonsVanquished += demonsVanquished;
-        //await _database.GetReference(playerKey).SetRawJsonValueAsync(JsonUtility.ToJson(currentUser));
     }
 
     public async Task<int> SetUsername(string user)
@@ -255,7 +308,11 @@ public class LeaderboardManager : MonoBehaviour
             user = censoredFuckName;
         }
 
-        var highscores = await GetHighscores();
+        highscores = null;
+        GetHighscores();
+        while (highscores == null)
+            await Task.Delay(0);
+        //var highscores = await GetHighscores();
         for (int i = 0; i < highscores.Count; i++)
         {
             for (int j = 0; j < currentUser.profiles.Length; j++)
@@ -318,7 +375,7 @@ public class LeaderboardManager : MonoBehaviour
     {
         int profileIdx = await SetUsername(name);
         if (0 > profileIdx) return;
-        var fireuser = await _auth.SignInWithEmailAndPasswordAsync(adminUser, adminKey);
+        //var fireuser = await _auth.SignInWithEmailAndPasswordAsync(adminUser, adminKey);
 
         ScoreData scoreEntry = currentUser.profiles[profileIdx];
         if (scoreEntry == null) scoreEntry = new ScoreData();
@@ -334,8 +391,9 @@ public class LeaderboardManager : MonoBehaviour
         currentUser.settings.sfx = settings.sfxVol.value;
         currentUser.settings.brightness = settings.brightnessSlider.value;
         Debug.Log($"Submiting score {scoreEntry.name} - dist: {scoreEntry.distance} score: {scoreEntry.score}");
-        await _database.GetReference(playerKey).SetRawJsonValueAsync(JsonUtility.ToJson(currentUser));
-        _auth.SignOut();
+        FirebaseDatabase.UpdateJSON(firebaseRoot + playerKey, JsonUtility.ToJson(currentUser), name, "", "");
+        //await _database.GetReference(playerKey).SetRawJsonValueAsync(JsonUtility.ToJson(currentUser));
+        //_auth.SignOut();
 
         await PopulateLeaderboard(leaderboardPanel, leaderboardElementPrefab, sortMethod);
     }
@@ -419,7 +477,11 @@ public class LeaderboardManager : MonoBehaviour
         int profileIdx = orderByScore ? scoreIdx : distIdx;
         string profileName = currentUser.profiles[profileIdx].name;
 
-        var highscores = await GetHighscores();
+        highscores = null;
+        GetHighscores();
+        while (highscores == null)
+            await Task.Delay(0);
+        //var highscores = await GetHighscores();
         int top = 5;
         int playerRank = -1;
         highscores = OrderHighScores(highscores, orderByScore);
@@ -472,6 +534,6 @@ public class LeaderboardManager : MonoBehaviour
 
     private void OnApplicationQuit()
     {
-        _auth.SignOut();
+        //_auth.SignOut();
     }
 }
