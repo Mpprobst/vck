@@ -75,6 +75,7 @@ public class LeaderboardManager : MonoBehaviour
     public UserData CurrentUser { get { return currentUser; } }
     private UserData currentUser;
     private bool initialized;
+    private string myUsername;
 
     private string adminUser = "admin@vck.org";
     private string adminKey = "tH!sI$Ahe!n0u$@uthKeYG00DLucKf**k3r$";
@@ -206,7 +207,7 @@ public class LeaderboardManager : MonoBehaviour
             return -1;
         }
 
-        string[] offensiveWords = { "d(i|y)ke", "fag+(s|ot|y|ier)", "gooks", "kikes", "ni?g+(a|er)", "shemale", "spick", "beaner", "trann(ie|y)", "hooknose", "cunt" };
+        string[] offensiveWords = { "d(i|y)ke", "fag+(s|ot|y|ier)", "gooks", "kikes", "ni?g+(a|er)", "shemale", "spick", "beaner", "trann(ie|y)", "hooknose", "cunt", "pussy" };
         string pattern = @"(";
         foreach (var slur in offensiveWords) pattern += $"{slur}|";
         pattern = pattern.Substring(0, pattern.Length - 1);
@@ -215,8 +216,43 @@ public class LeaderboardManager : MonoBehaviour
         Regex offensiveRegex = new Regex(pattern, RegexOptions.IgnoreCase);
         if (offensiveRegex.IsMatch(cleanedUsername))
         {
-            ReportWarning($"Hey, that's not a cool username.");
+            ReportWarning($"Go fuck yourself");
             return -1;
+        }
+
+        Regex fuckface = new Regex(@"f+u+c+k+f+a+c+e");
+        //if (cleanedUsername.Contains("fuckface"))
+        if (fuckface.IsMatch(cleanedUsername))
+        {
+            int censorQueue = 0;
+            string censoredFuckName = "";
+            for (int i = 0; i < user.Length; i++)
+            {
+                if (censorQueue > 0)
+                {
+                    censoredFuckName += '*';
+                    censorQueue--;
+                }
+                else
+                    censoredFuckName += user[i];
+
+                if (user[i] == 'f' || user[i] == 'F')
+                {
+                    for (int f = i+1; f < user.Length; f++)
+                    {
+                        if (user[f] == 'k' || user[f] == 'K')
+                        {
+                            break;
+                        }
+                        else if (f == user.Length - 1 || f > 6)
+                        {
+                            censorQueue = -1;
+                        }
+                        censorQueue++;
+                    }
+                }
+            }
+            user = censoredFuckName;
         }
 
         var highscores = await GetHighscores();
@@ -274,7 +310,7 @@ public class LeaderboardManager : MonoBehaviour
         }
         if (playerKey == "")
             GenerateKey();
-
+        myUsername = user;
         return id;
     }
 
@@ -286,7 +322,7 @@ public class LeaderboardManager : MonoBehaviour
 
         ScoreData scoreEntry = currentUser.profiles[profileIdx];
         if (scoreEntry == null) scoreEntry = new ScoreData();
-        scoreEntry.name = name;
+        scoreEntry.name = myUsername;
         if (dist > scoreEntry.distance) scoreEntry.distance = dist;
         if (score > scoreEntry.score) scoreEntry.score = score;
         currentUser.profiles[profileIdx] = scoreEntry;

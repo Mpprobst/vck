@@ -23,4 +23,9 @@ public class Trigger : MonoBehaviour
     {
         objectEnteredEvent.Invoke(collision.gameObject);
     }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        objectEnteredEvent.Invoke(collision.gameObject);
+    }
 }
