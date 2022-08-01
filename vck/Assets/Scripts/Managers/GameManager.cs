@@ -35,18 +35,23 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator WaitForLeaderboard()
     {
-        while (LeaderboardManager.Instance == null)
-            yield return new WaitForEndOfFrame();
+        if (GameObject.FindObjectOfType<LeaderboardManager>() != null)
+        {
+            while (LeaderboardManager.Instance == null)
+                yield return new WaitForEndOfFrame();
+        }
         Initialize();
     }
 
     private async Task Initialize()
     {
-        if (LeaderboardManager.Instance.CurrentUser == null)
+        if (GameObject.FindObjectOfType<LeaderboardManager>() != null)
         {
-            await LeaderboardManager.Instance.Initialize();
+            if (LeaderboardManager.Instance.CurrentUser == null)
+            {
+                await LeaderboardManager.Instance.Initialize();
+            }
         }
-
         audioManager = GameObject.FindObjectOfType<AudioManager>();
         lightingController = GameObject.FindObjectOfType<LightingController>();
         settings = GameObject.FindObjectOfType<SettingsManager>();

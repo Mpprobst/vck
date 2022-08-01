@@ -15,15 +15,15 @@ public class LightingController : MonoBehaviour
     {
         if (_instance == null)
             _instance = this;
-       
+
         globalBaseIntensity = globalLight.intensity;
         backgroundBaseIntensity = backgroundLight.intensity;
         ChangeLightIntensity(1);
+
         if (LeaderboardManager.Instance.CurrentUser.HasEntries())
         {
             ChangeLightIntensity(LeaderboardManager.Instance.CurrentUser.settings.brightness);
         }
-
     }
 
     public void ChangeLightIntensity(float val)

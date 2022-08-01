@@ -17,14 +17,6 @@ public class TitleScreenManager : MonoBehaviour
         infoBackButon.onClick.AddListener(CloseInfo);
         quitButton.onClick.AddListener(QuitGame);
         CloseInfo();
-        StartCoroutine(WaitForLeaderboard());
-    }
-
-    private IEnumerator WaitForLeaderboard()
-    {
-        while (LeaderboardManager.Instance == null)
-            yield return new WaitForEndOfFrame();
-        LeaderboardManager.Instance.Initialize();
     }
 
     // Update is called once per frame
