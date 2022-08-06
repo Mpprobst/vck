@@ -50,7 +50,7 @@ public class UIManager : MonoBehaviour
 
     public void LoadLeaderboard(bool orderByScore)
     {
-        LeaderboardManager.Instance.PopulateLeaderboard(leaderboardContent, leaderboardElementPrefab, orderByScore);
+        LeaderboardManager.Instance.SetLeaderboard(leaderboardContent, leaderboardElementPrefab, orderByScore);
         distOrScoreText.text = orderByScore ? "SCORE" : "DIST";
     }
 

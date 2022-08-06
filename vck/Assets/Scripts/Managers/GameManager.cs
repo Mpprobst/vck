@@ -40,11 +40,11 @@ public class GameManager : MonoBehaviour
         Initialize();
     }
 
-    private async Task Initialize()
+    private void Initialize()
     {
         if (LeaderboardManager.Instance.CurrentUser == null)
         {
-            await LeaderboardManager.Instance.Initialize();
+            LeaderboardManager.Instance.Initialize();
         }
 
         audioManager = GameObject.FindObjectOfType<AudioManager>();
