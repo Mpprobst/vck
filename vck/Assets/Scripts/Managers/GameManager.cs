@@ -27,25 +27,28 @@ public class GameManager : MonoBehaviour
         if (_instance == null)
             _instance = this;
         if (_instance != this)
-            Destroy(this);
+            Destroy(gameObject);
 
         Reset();
-        StartCoroutine(WaitForLeaderboard());
     }
 
-    private IEnumerator WaitForLeaderboard()
+    private void UserSignedIn(bool validUser)
     {
-        while (LeaderboardManager.Instance == null)
-            yield return new WaitForEndOfFrame();
-        Initialize();
-    }
-
-    private void Initialize()
-    {
-        if (LeaderboardManager.Instance.CurrentUser == null)
+        if (validUser)
         {
+            // prompt leaderboard manager to get the current user
             LeaderboardManager.Instance.Initialize();
         }
+        else
+        {
+            Initialize();
+        }
+
+    }
+
+    public void Initialize()
+    {
+        //LeaderboardManager.Instance.Initialize();
 
         audioManager = GameObject.FindObjectOfType<AudioManager>();
         lightingController = GameObject.FindObjectOfType<LightingController>();
@@ -74,6 +77,10 @@ public class GameManager : MonoBehaviour
 
     private void Reset()
     {
+        PlayerDetails.Instance.loginAttemptEvent = new UnityEvent<bool>();
+        PlayerDetails.Instance.loginAttemptEvent.AddListener(UserSignedIn);
+        PlayerDetails.Instance.SignIn();
+
         TutorialManager tutorial = GameObject.FindObjectOfType<TutorialManager>();
         tutorial.tutorialComplete = new UnityEvent();
         tutorial.tutorialComplete.AddListener(BeginGame);
@@ -111,9 +118,9 @@ public class GameManager : MonoBehaviour
         spawnManager.StopSpawning();
     }
 
-    public void SubmitScore(string username)
+    public void SubmitScore(string username, string password)
     {
-        LeaderboardManager.Instance.SubmitScore(username, distance, score);
+        LeaderboardManager.Instance.SubmitScore(username, password, distance, score);
     }
 
     private void End()

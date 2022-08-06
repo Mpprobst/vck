@@ -1,13 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using TMPro;
+using Text = TMPro.TextMeshProUGUI;
 
 public class TitleScreenManager : MonoBehaviour
 {
-    [SerializeField] Button startButton, infoButton, quitButton, infoBackButon;
+    [SerializeField] Button startButton, infoButton, quitButton, infoBackButon, signInButton;
     [SerializeField] GameObject infoPanel;
+    [SerializeField] TMP_InputField usernameInput, passwordInput;
+    [SerializeField] Text loginMessage;
+
 
     // Start is called before the first frame update
     void Start()
@@ -16,15 +22,12 @@ public class TitleScreenManager : MonoBehaviour
         infoButton.onClick.AddListener(OpenInfo);
         infoBackButon.onClick.AddListener(CloseInfo);
         quitButton.onClick.AddListener(QuitGame);
+        PlayerDetails.Instance.loginAttemptEvent = new UnityEvent<bool>();
+        PlayerDetails.Instance.loginAttemptEvent.AddListener(SignInAttempt);
+        usernameInput.onEndEdit.AddListener(PlayerDetails.Instance.SetUsername);
+        passwordInput.onEndEdit.AddListener(PlayerDetails.Instance.SetPassword);
+        signInButton.onClick.AddListener(PlayerDetails.Instance.SignIn);
         CloseInfo();
-        StartCoroutine(WaitForLeaderboard());
-    }
-
-    private IEnumerator WaitForLeaderboard()
-    {
-        while (LeaderboardManager.Instance == null)
-            yield return new WaitForEndOfFrame();
-        LeaderboardManager.Instance.Initialize();
     }
 
     // Update is called once per frame
@@ -46,6 +49,18 @@ public class TitleScreenManager : MonoBehaviour
     private void CloseInfo()
     {
         infoPanel.SetActive(false);
+    }
+
+    private void SignInAttempt(bool success)
+    {
+        loginMessage.text = "Login " + (success ? "successful" : "invalid");
+        loginMessage.color = success ? Color.green : Color.red;
+        Invoke("CloseMessage", 2f);
+    }
+
+    private void CloseMessage()
+    {
+        loginMessage.text = "";
     }
 
     private void QuitGame()

@@ -14,7 +14,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Button retryButton, quitButton, submitScoreButton;
     [SerializeField] private Transform health, leaderboardContent;  // must have horiz layout
     [SerializeField] private GameObject healthPrefab, leaderboardElementPrefab;
-    [SerializeField] private TMPro.TMP_InputField usernameInput;
+    [SerializeField] private TMPro.TMP_InputField usernameInput, passwordInput;
     [SerializeField] private Toggle scoreDistToggle;
     private List<GameObject> healthIcons;
 
@@ -99,7 +99,7 @@ public class UIManager : MonoBehaviour
     private void SubmitScorePressed()
     {
         if (usernameInput.text != "")
-            GameManager.Instance.SubmitScore(usernameInput.text);
+            GameManager.Instance.SubmitScore(usernameInput.text, passwordInput.text);
     }
 
     public void ShowWarning(string message)
