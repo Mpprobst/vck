@@ -50,6 +50,8 @@ public class UIManager : MonoBehaviour
 
     public void LoadLeaderboard(bool orderByScore)
     {
+        if (PlayerDetails.Instance.UserLoggedIn)
+            usernameInput.text = PlayerDetails.Instance.Username; 
         LeaderboardManager.Instance.SetLeaderboard(leaderboardContent, leaderboardElementPrefab, orderByScore);
         distOrScoreText.text = orderByScore ? "SCORE" : "DIST";
     }

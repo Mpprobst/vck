@@ -13,7 +13,7 @@ public class PlayerDetails : MonoBehaviour
     public static PlayerDetails Instance { get { return _instance; } }
     private static PlayerDetails _instance;
 
-    public UnityEvent<bool> loginAttemptEvent;
+    public UnityEvent<bool> loginAttemptEvent, createAccountEvent;
 
     public string Username { get { return _username; } }
     public bool UserLoggedIn { get { return _validUser; } }
@@ -21,7 +21,7 @@ public class PlayerDetails : MonoBehaviour
     private string firebaseRoot = "users/";
     private string _username = "";
     private string _password;
-    private string emailExtension = "@vck.game";
+    private string emailExtension = "@vck.org";
     private bool _validUser;
 
     // Start is called before the first frame update
@@ -50,6 +50,7 @@ public class PlayerDetails : MonoBehaviour
 
     public void SignIn()
     {
+        Debug.Log("Signing in: " + _username + emailExtension);
         FirebaseAuth.SignInWithEmailAndPassword(_username + emailExtension, _password, name, "AuthLoginCallback", "AuthLoginFallback");
     }
 
@@ -93,11 +94,15 @@ public class PlayerDetails : MonoBehaviour
     private void CreateAccountSuccess(string output)
     {
         Debug.Log("Account created successfully: " + output);
+        if (createAccountEvent != null)
+            createAccountEvent.Invoke(true);
     }
 
     private void CreateAccountFailure(string output)
     {
         Debug.Log("Error creating account: " + output);
+        if (createAccountEvent != null)
+            createAccountEvent.Invoke(false);
     }
 
 

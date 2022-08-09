@@ -60,7 +60,6 @@ public class LeaderboardManager : MonoBehaviour
     
     public int maxEntries = 1000;
     public int maxKeyLength = 16;
-    public int maxProfiles;
 
     [SerializeField] private Text totalKickText, totalKillText;
     [SerializeField] private Transform profilesPanel;
@@ -273,7 +272,7 @@ public class LeaderboardManager : MonoBehaviour
 
     public int SetUsername(string user)
     {
-        int id = -1;
+        int id = 1;
 
         if (user.Length > maxKeyLength)
         {
@@ -356,12 +355,13 @@ public class LeaderboardManager : MonoBehaviour
             user = censoredFuckName;
         }
 
+        if (currentUser.profile.name == user)
+            return 1;
+
         //var highscores = await GetHighscores();
         for (int i = 0; i < highscores.Count; i++)
         {
-            if (currentUser.profile.name == user)
-                return 0;
-            if (user == highscores[i].name && id < 0)
+            if (user == highscores[i].name)
             {
                 ReportWarning($"Cannot use {user}. It is already in use");
                 return -1;
@@ -388,12 +388,32 @@ public class LeaderboardManager : MonoBehaviour
     {
         if (valid)
         {
-            FirebaseDatabase.GetJSON(firebaseRoot, gameObject.name, "GetScoresSubmit", "DatabaseGetFallback");
+            // must sign in as admin before I can get these details
+            FirebaseAuth.SignInWithEmailAndPassword(adminUser, adminKey, name, "QueryDatabaseForScores", "AuthLoginFallback");
         }
         else
         {
-            ReportWarning("Invalid username/password");
+            // create user.
+            // if user cannot be created, then it is invalid login
+            PlayerDetails.Instance.createAccountEvent = new UnityEngine.Events.UnityEvent<bool>();
+            PlayerDetails.Instance.createAccountEvent.AddListener(OnAccountCreate);
+            PlayerDetails.Instance.CreateNewAccount(new UserData());
         }
+    }
+
+    private void OnAccountCreate(bool success)
+    {
+        if (!success)
+        {
+            ReportWarning("Invalid username/password");
+            return;
+        }
+        ValidateUser(true);
+    }
+
+    private void QueryDatabaseForScores(string output)
+    {
+        FirebaseDatabase.GetJSON(firebaseRoot, gameObject.name, "GetScoresSubmit", "DatabaseGetFallback");
     }
 
     private void ReportWarning(string message)
@@ -417,12 +437,15 @@ public class LeaderboardManager : MonoBehaviour
         if (profileElement != null)
             Destroy(profileElement.gameObject);
 
-        profileElement = Instantiate(leaderboardElementPrefab, profilesPanel).GetComponent<LeaderboardElement>();
-        var prof = currentUser.profile;
-        profileElement.Initialize(1, prof.name, $"<b>{prof.distance}m</b> - <b>{prof.score}</b>");
+        if (currentUser.profile.name != "")
+        {
+            profileElement = Instantiate(leaderboardElementPrefab, profilesPanel).GetComponent<LeaderboardElement>();
+            var prof = currentUser.profile;
+            profileElement.Initialize(1, prof.name, $"<b>{prof.distance}m</b> - <b>{prof.score}</b>");
 
-        totalKickText.text = currentUser.childrenKicked.ToString();
-        totalKillText.text = currentUser.demonsVanquished.ToString();
+            totalKickText.text = currentUser.childrenKicked.ToString();
+            totalKillText.text = currentUser.demonsVanquished.ToString();
+        }
 
         // Populate the leaderboard
         if (leaderboardElements != null)
