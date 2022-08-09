@@ -19,7 +19,7 @@ public class LightingController : MonoBehaviour
         globalBaseIntensity = globalLight.intensity;
         backgroundBaseIntensity = backgroundLight.intensity;
         ChangeLightIntensity(1);
-        if (LeaderboardManager.Instance.CurrentUser.HasEntries())
+        if (LeaderboardManager.Instance.CurrentUser.authenticated)
         {
             ChangeLightIntensity(LeaderboardManager.Instance.CurrentUser.settings.brightness);
         }

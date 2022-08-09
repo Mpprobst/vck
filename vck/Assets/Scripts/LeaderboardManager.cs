@@ -18,11 +18,6 @@ public class UserData
     public int childrenKicked, demonsVanquished;
     public bool authenticated;
 
-    public bool HasEntries()
-    {
-        return profile.score > 0;
-    }
-
     public UserData()
     {
         settings = new UserSettings();
@@ -91,42 +86,20 @@ public class LeaderboardManager : MonoBehaviour
     public void Initialize()
     {
         initialized = true;
-        // This should prevent outside users from modifying the database
-        FirebaseAuth.SignInWithEmailAndPassword(adminUser, adminKey, name, "AuthLoginCallback", "AuthLoginFallback");
-        if (PlayerDetails.Instance.UserLoggedIn)
-        {
-            string path = firebaseRoot;
-            Debug.Log("Getting from firebase path: " + path);
-            FirebaseDatabase.GetJSON(path, name, "InitializeUser", "CreateNewUser");
-        }
+        FirebaseAuth.SignInWithEmailAndPassword(adminUser, adminKey, name, PlayerDetails.Instance.UserLoggedIn ? "InitializeAsAdmin" : "AuthLoginCallback", "AuthLoginFallback");
     }
 
     #region FirebaseBridgeCalllbacks
+    private void InitializeAsAdmin(string output)
+    {
+        FirebaseDatabase.GetJSON(firebaseRoot + "/" + PlayerDetails.Instance.Username, name, "InitializeUser", "CreateNewUser");
+    }
+
     private void InitializeUser(string output)
     {
-        Debug.Log("Get User callback: " + output);
         if (output != null && output != "null")
         {
-            JToken data = JsonConvert.DeserializeObject<JToken>(output);
-            foreach (var session in data.Children())
-            {
-                foreach (var child in session.Children())
-                {
-                    var user = JsonUtility.FromJson<UserData>(child.ToString());
-                    if (user != null)
-                    {
-                        if (user.profile.name == PlayerDetails.Instance.Username)
-                        {
-                            currentUser = user;
-                            break;
-                        }
-                    }
-                    if (currentUser != null)
-                        break;
-                }
-                if (currentUser != null)
-                    break;
-            }
+            currentUser = JsonConvert.DeserializeObject<UserData>(output);
         }
         bool newUser = false;
         if (currentUser != null)
@@ -146,7 +119,6 @@ public class LeaderboardManager : MonoBehaviour
             CreateNewUser("");
             return;
         }
-        Debug.Log("User data found for: ");
         GameManager.Instance.Initialize();
     }
 
@@ -154,39 +126,39 @@ public class LeaderboardManager : MonoBehaviour
     {
         currentUser = new UserData();
         currentUser.authenticated = true;
+        currentUser.profile.name = PlayerDetails.Instance.Username;
         FirebaseDatabase.PushJSON(firebaseRoot + PlayerDetails.Instance.Username, JsonUtility.ToJson(currentUser), name, "DatabasePostCallback", "DatabasePostFallback");
         GameManager.Instance.Initialize();
     }
 
     private void AuthLoginCallback(string output)
     {
-        Debug.Log("Logged in as: " + output);
+        Debug.Log("Login leaderboard success");
     }
 
     private void AuthLoginFallback(string output)
     {
-        Debug.Log("Login error:" + output);
+        Debug.Log("Login leaderboard error");
     }
 
     private void DatabaseGetUserFallback(string output)
     {
-        currentUser = new UserData();
-        Debug.Log("Database get fallback error:" + output);
+        Debug.LogWarning("Error getting user from database:" + output);
     }
 
     private void DatabaseGetFallback(string output)
     {
-        Debug.Log("Database get fallback error:" + output);
+        Debug.LogWarning("Error getting from database:" + output);
     }
 
     private void DatabasePostCallback(string output)
     {
-        Debug.Log("Post callback: " + output);
+        //Debug.Log("Post callback");
     }
 
     private void DatabasePostFallback(string output)
     {
-        Debug.Log("Post fallback error: " + output);
+        Debug.Log("Error posting to database" + output);
     }
 
     private void GetScoresCallback(string output)
@@ -196,40 +168,49 @@ public class LeaderboardManager : MonoBehaviour
 
     private void GetScoresSubmit(string output)
     {
-        Debug.Log("Getting scores to submit a score");
+        //Debug.Log("Getting scores to submit a score");
         highscores = PopulateHighScores(output);
-        int profileIdx = SetUsername(PlayerDetails.Instance.Username);
-        Debug.Log($"Set username as: {PlayerDetails.Instance.Username} with idx: {profileIdx}");
-        if (0 > profileIdx) return;
+        //Debug.Log("Got highscores");
+        if (currentUser == null) currentUser = new UserData();
+        currentUser.profile.name = PlayerDetails.Instance.Username;
+        if (myDist > currentUser.profile.distance) currentUser.profile.distance = myDist;
+        if (myScore > currentUser.profile.score) currentUser.profile.score = myScore;
 
-        ScoreData scoreEntry = currentUser.profile;
-        if (scoreEntry == null) scoreEntry = new ScoreData();
-        scoreEntry.name = PlayerDetails.Instance.Username;
-        if (myDist > scoreEntry.distance) scoreEntry.distance = myDist;
-        if (myScore > scoreEntry.score) scoreEntry.score = myScore;
-        currentUser.profile = scoreEntry;
-
-        SettingsManager settings = SettingsManager.Instance;
-        currentUser.settings.master = settings.masterVol.value;
-        currentUser.settings.music = settings.musicVol.value;
-        currentUser.settings.ambience = settings.ambienceVol.value;
-        currentUser.settings.sfx = settings.sfxVol.value;
-        currentUser.settings.brightness = settings.brightnessSlider.value;
-        Debug.Log($"Submiting score {scoreEntry.name} - dist: {scoreEntry.distance} score: {scoreEntry.score}");
+        if (SettingsManager.Instance != null)
+        {
+            currentUser.settings.master = SettingsManager.Instance.masterVol.value;
+            currentUser.settings.music = SettingsManager.Instance.musicVol.value;
+            currentUser.settings.ambience = SettingsManager.Instance.ambienceVol.value;
+            currentUser.settings.sfx = SettingsManager.Instance.sfxVol.value;
+            currentUser.settings.brightness = SettingsManager.Instance.brightnessSlider.value;
+        }
+        currentUser.authenticated = true;
+        
+        Debug.Log($"Submiting score {currentUser.profile.name} - dist: {currentUser.profile.distance} score: {currentUser.profile.score}");
         if (!PlayerDetails.Instance.UserLoggedIn)
         {
-            // user does not yet exist in the auth, so we must create it
-            PlayerDetails.Instance.CreateNewAccount(currentUser);
+            PlayerDetails.Instance.PostUserData(currentUser);
         }
         else
+        {
             FirebaseDatabase.UpdateJSON(firebaseRoot + PlayerDetails.Instance.Username, JsonUtility.ToJson(currentUser), name, "DatabasePostCallback", "DatabasePostFallback");
-        highscores.Add(scoreEntry);
+        }
+        foreach (var score in highscores)
+        {
+            if (score.name == currentUser.profile.name)
+            {
+                highscores.Remove(score);
+                break;
+            }
+        }
+        highscores.Add(currentUser.profile);
+        // successful post, dont allow any more posts from this time.
+        UIManager.Instance.ScoreSubmitted();
         PopulateLeaderboard();
     }
 
     private void PopulateLeaderboardCallback(string output)
     {
-        Debug.Log("Called back to populate leaderboard");
         highscores = PopulateHighScores(output);
         PopulateLeaderboard();
         
@@ -238,11 +219,11 @@ public class LeaderboardManager : MonoBehaviour
 
     private List<ScoreData> PopulateHighScores(string json)
     {
-        Debug.Log($"getting highscores from: {json}");
         var scores = new List<ScoreData>();
         var scoresDb = JsonConvert.DeserializeObject<JToken>(json);
         foreach (var session in scoresDb.Children()) 
         {
+            if (session == null) continue;
             JToken info = null;
             foreach (var child in session.Children())
                 if (child != null)
@@ -250,9 +231,8 @@ public class LeaderboardManager : MonoBehaviour
 
             if (info != null)
             {
-                Debug.Log($"Getting score from {info.ToString()}");
-                var score = JsonUtility.FromJson<ScoreData>(info.ToString());
-                scores.Add(score);
+                var userData = JsonUtility.FromJson<UserData>(info.ToString());
+                scores.Add(userData.profile);
             }
         }
         return scores;
@@ -273,6 +253,18 @@ public class LeaderboardManager : MonoBehaviour
     public int SetUsername(string user)
     {
         int id = 1;
+        if (PlayerDetails.Instance.UserLoggedIn)
+        {
+            if (user != PlayerDetails.Instance.Username)
+            {
+                ReportWarning("That is not your username! (this session)");
+                return -1;
+            }
+            else
+            {
+                return 1;
+            }
+        }
 
         if (user.Length > maxKeyLength)
         {
@@ -296,8 +288,6 @@ public class LeaderboardManager : MonoBehaviour
         cleanedUsername = replaceS.Replace(cleanedUsername, "s");
         Regex replaceG = new Regex(@"[96]");
         cleanedUsername = replaceG.Replace(cleanedUsername, "g");
-
-        Debug.Log($"\'{user}\' cleaned: \'{cleanedUsername}\'");
 
         string invalidChars = @"[?/\|:;]";
         Regex charCheck = new Regex(invalidChars);
@@ -372,13 +362,17 @@ public class LeaderboardManager : MonoBehaviour
         return id;
     }
 
-    public void SubmitScore(string name, string password, int dist, int score)
+    public void SubmitScore(string username, string password, int dist, int score)
     {
-        PlayerDetails.Instance.SetUsername(name);
-        PlayerDetails.Instance.SetPassword(password);
+        if (!PlayerDetails.Instance.UserLoggedIn)
+        {
+            PlayerDetails.Instance.SetPassword(password);
+            int profileIdx = SetUsername(username);
+            if (0 > profileIdx) return;
+        }
+
         myDist = dist;
         myScore = score;
-
         PlayerDetails.Instance.loginAttemptEvent = new UnityEngine.Events.UnityEvent<bool>();
         PlayerDetails.Instance.loginAttemptEvent.AddListener(ValidateUser);
         PlayerDetails.Instance.SignIn();
@@ -395,13 +389,13 @@ public class LeaderboardManager : MonoBehaviour
         {
             // create user.
             // if user cannot be created, then it is invalid login
-            PlayerDetails.Instance.createAccountEvent = new UnityEngine.Events.UnityEvent<bool>();
-            PlayerDetails.Instance.createAccountEvent.AddListener(OnAccountCreate);
-            PlayerDetails.Instance.CreateNewAccount(new UserData());
+            PlayerDetails.Instance.loginAttemptEvent = new UnityEngine.Events.UnityEvent<bool>();
+            PlayerDetails.Instance.loginAttemptEvent.AddListener(OnAccountRegister);
+            PlayerDetails.Instance.RegisterAccount();
         }
     }
 
-    private void OnAccountCreate(bool success)
+    private void OnAccountRegister(bool success)
     {
         if (!success)
         {
@@ -473,7 +467,7 @@ public class LeaderboardManager : MonoBehaviour
         if (playerRank >= top)
         {
             int prev = playerRank - 1;
-            if (prev < top)
+            if (prev > top)
             {
                 var elip = Instantiate(leaderboardElementPrefab, leaderboardPanel).GetComponent<LeaderboardElement>();
                 elip.Initialize(-1, "...", "");
@@ -493,14 +487,17 @@ public class LeaderboardManager : MonoBehaviour
 
         if (playerRank != highscores.Count - 1)
         {
-            var elipses = Instantiate(leaderboardElementPrefab, leaderboardPanel).GetComponent<LeaderboardElement>();
-            elipses.Initialize(-1, "...", "");
-            leaderboardElements.Add(elipses);
+            if (playerRank != highscores.Count - 2)
+            {
+                var elipses = Instantiate(leaderboardElementPrefab, leaderboardPanel).GetComponent<LeaderboardElement>();
+                elipses.Initialize(-1, "...", "");
+                leaderboardElements.Add(elipses);
 
-            var worstScore = highscores[highscores.Count - 1];
-            var worstElement = Instantiate(leaderboardElementPrefab, leaderboardPanel).GetComponent<LeaderboardElement>();
-            worstElement.Initialize(highscores.Count, worstScore.name, sortMethod ? worstScore.score.ToString() : worstScore.distance.ToString() + "m");
-            leaderboardElements.Add(worstElement);
+                var worstScore = highscores[highscores.Count - 1];
+                var worstElement = Instantiate(leaderboardElementPrefab, leaderboardPanel).GetComponent<LeaderboardElement>();
+                worstElement.Initialize(highscores.Count, worstScore.name, sortMethod ? worstScore.score.ToString() : worstScore.distance.ToString() + "m");
+                leaderboardElements.Add(worstElement);
+            }
         }
     }
 }

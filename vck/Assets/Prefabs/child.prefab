@@ -54,9 +54,9 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   speedRange: 0.25
-  attackDelay: 0.5
+  attackDelay: 0.6
   desapwnTime: 10
-  minDist: 10
+  minDist: 7.5
   attackClips:
   - {fileID: 8300000, guid: fa578767e2fd64668a12d5bccc7ccb25, type: 3}
   - {fileID: 8300000, guid: a36484340582a42a6afcd0599443c933, type: 3}
@@ -102,6 +102,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 1
   arrivalDistance: 1
+  boostDist: 4.5
+  boostSpeed: 2.5
   moveDelay: 0.75
   destinationReached:
     m_PersistentCalls:

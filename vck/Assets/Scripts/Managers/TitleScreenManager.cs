@@ -27,6 +27,7 @@ public class TitleScreenManager : MonoBehaviour
         usernameInput.onEndEdit.AddListener(PlayerDetails.Instance.SetUsername);
         passwordInput.onEndEdit.AddListener(PlayerDetails.Instance.SetPassword);
         signInButton.onClick.AddListener(PlayerDetails.Instance.SignIn);
+        CloseMessage();
         CloseInfo();
     }
 

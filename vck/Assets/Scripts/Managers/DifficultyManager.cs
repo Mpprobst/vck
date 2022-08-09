@@ -10,7 +10,7 @@ public class DifficultyManager : MonoBehaviour
     public float Difficulty { get { return _diff; } }
     private float _diff = 1f;
 
-    public float maxDiff = 3f;
+    public float maxDiff = 4f;
     private PlayerController player;
 
     // Start is called before the first frame update

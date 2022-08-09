@@ -12,7 +12,7 @@ public class AudioManager : MonoBehaviour
     // Start is called before the first frame update
     public void Initialize()
     {
-        if (LeaderboardManager.Instance.CurrentUser.HasEntries())
+        if (LeaderboardManager.Instance.CurrentUser.authenticated)
         {
             // set volumes based on user profile
             SetMixerVolume(MixerType.MASTER, LeaderboardManager.Instance.CurrentUser.settings.master);

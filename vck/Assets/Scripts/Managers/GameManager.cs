@@ -77,9 +77,12 @@ public class GameManager : MonoBehaviour
 
     private void Reset()
     {
-        PlayerDetails.Instance.loginAttemptEvent = new UnityEvent<bool>();
-        PlayerDetails.Instance.loginAttemptEvent.AddListener(UserSignedIn);
-        PlayerDetails.Instance.SignIn();
+        if (PlayerDetails.Instance != null)
+        {
+            PlayerDetails.Instance.loginAttemptEvent = new UnityEvent<bool>();
+            PlayerDetails.Instance.loginAttemptEvent.AddListener(UserSignedIn);
+            PlayerDetails.Instance.SignIn();
+        }
 
         TutorialManager tutorial = GameObject.FindObjectOfType<TutorialManager>();
         tutorial.tutorialComplete = new UnityEvent();

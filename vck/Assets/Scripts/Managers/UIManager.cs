@@ -45,13 +45,17 @@ public class UIManager : MonoBehaviour
         // TODO: animate end screen
         endScore.text = score.text;
         endDist.text = distance.text;
+        if (PlayerDetails.Instance.UserLoggedIn)
+            passwordInput.gameObject.SetActive(false);
         LoadLeaderboard(false);
     }
 
     public void LoadLeaderboard(bool orderByScore)
     {
         if (PlayerDetails.Instance.UserLoggedIn)
-            usernameInput.text = PlayerDetails.Instance.Username; 
+        {
+            usernameInput.text = PlayerDetails.Instance.Username;
+        }
         LeaderboardManager.Instance.SetLeaderboard(leaderboardContent, leaderboardElementPrefab, orderByScore);
         distOrScoreText.text = orderByScore ? "SCORE" : "DIST";
     }
@@ -116,5 +120,11 @@ public class UIManager : MonoBehaviour
         yield return new WaitForSecondsRealtime(2f);
         warningText.text = "";
         warningText.color = Color.black;
+    }
+
+    public void ScoreSubmitted()
+    {
+        submitScoreButton.interactable = false;
+        submitScoreButton.GetComponentInChildren<Text>().text = "Score Submitted!";
     }
 }

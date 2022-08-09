@@ -13,7 +13,7 @@ public class PlayerDetails : MonoBehaviour
     public static PlayerDetails Instance { get { return _instance; } }
     private static PlayerDetails _instance;
 
-    public UnityEvent<bool> loginAttemptEvent, createAccountEvent;
+    public UnityEvent<bool> loginAttemptEvent;
 
     public string Username { get { return _username; } }
     public bool UserLoggedIn { get { return _validUser; } }
@@ -50,14 +50,20 @@ public class PlayerDetails : MonoBehaviour
 
     public void SignIn()
     {
-        Debug.Log("Signing in: " + _username + emailExtension);
+        //Debug.Log("Signing in: " + _username + emailExtension);
         FirebaseAuth.SignInWithEmailAndPassword(_username + emailExtension, _password, name, "AuthLoginCallback", "AuthLoginFallback");
+    }
+
+    public void RegisterAccount()
+    {
+        Debug.Log($"Registering user: {_username}");
+        FirebaseAuth.CreateUserWithEmailAndPassword(_username + emailExtension, _password, name, "AuthLoginCallback", "AuthLoginFallback");
     }
 
     private void AuthLoginCallback(string output)
     {
         _validUser = true;
-        Debug.Log("Logged in as: " + output);
+        Debug.Log("Login successful!");
         if (loginAttemptEvent != null)
             loginAttemptEvent.Invoke(true);
     }
@@ -65,7 +71,7 @@ public class PlayerDetails : MonoBehaviour
     private void AuthLoginFallback(string output)
     {
         _validUser = false;
-        Debug.Log("Login error:" + output);
+        Debug.Log("Login error");
         if (loginAttemptEvent != null)
             loginAttemptEvent.Invoke(false);
     }
@@ -85,24 +91,19 @@ public class PlayerDetails : MonoBehaviour
         return sb.ToString();
     }
 
-
-    public void CreateNewAccount(UserData user)
+    public void PostUserData(UserData user)
     {
         FirebaseDatabase.PostJSON(firebaseRoot + _username, JsonUtility.ToJson(user), name, "CreateAccountSuccess", "CreateAccountFailure");
     }
 
     private void CreateAccountSuccess(string output)
     {
-        Debug.Log("Account created successfully: " + output);
-        if (createAccountEvent != null)
-            createAccountEvent.Invoke(true);
+        Debug.Log("Account created successfully");
     }
 
     private void CreateAccountFailure(string output)
     {
-        Debug.Log("Error creating account: " + output);
-        if (createAccountEvent != null)
-            createAccountEvent.Invoke(false);
+        Debug.Log("Error creating account");
     }
 
 

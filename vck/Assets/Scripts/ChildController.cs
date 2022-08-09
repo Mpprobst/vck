@@ -26,7 +26,7 @@ public class ChildController : MonoBehaviour
     private Collider2D collider;
     private AudioSource audioSource;
 
-    private bool revealed, turned;
+    private bool attacking, revealed, turned;
     private float spawnTime;
 
     // Start is called before the first frame update
@@ -44,7 +44,7 @@ public class ChildController : MonoBehaviour
         if (DifficultyManager.Instance)
         {
             baseSpeed = 0.5f + DifficultyManager.Instance.Difficulty / 2f;
-            attackDelay = Random.Range(attackDelay, attackDelay + 0.1f) / DifficultyManager.Instance.Difficulty;
+            attackDelay = Random.Range(attackDelay, attackDelay + 0.1f) / (DifficultyManager.Instance.Difficulty * 0.8f);
         }
         mover.speed = Random.Range(baseSpeed - speedRange, baseSpeed + speedRange);
         mover.SetTarget(player.transform);
@@ -140,7 +140,7 @@ public class ChildController : MonoBehaviour
             collider.isTrigger = true;
             GameObject carrot = new GameObject();
             carrot.transform.parent = transform;
-            carrot.transform.localPosition = new Vector2(model.transform.localScale.x*5f, 0);
+            carrot.transform.localPosition = new Vector2(model.transform.localScale.x*3f, 0);
             mover.SetTarget(carrot.transform);
         }
         else if (health.IsAlive() && player.IsAlive())
@@ -156,23 +156,26 @@ public class ChildController : MonoBehaviour
             }
             if (DifficultyManager.Instance.Difficulty > 1.5f)
                 attackDelay = Mathf.Clamp(attackDelay * 0.8f, 0.1f, 10f);
-            StartCoroutine(StartAttack());
+            if (!attacking)
+                StartCoroutine(StartAttack());
         }
     }
 
     private IEnumerator StartAttack()
     {
+        attacking = true;
         audioSource.clip = attackClips[Random.Range(0, attackClips.Length)];
         audioSource.Play();
-        animator.speed = DifficultyManager.Instance.Difficulty / 2f;
+        animator.speed = DifficultyManager.Instance.Difficulty / 2.5f;
         yield return new WaitForEndOfFrame();
         yield return new WaitForSecondsRealtime(attackDelay);
         animator.SetTrigger("attack");
         animator.speed = 1f;
     }
 
-    private void AttackEnd()
+    public void AttackEnd()
     {
+        attacking = false;
         mover.Resume();
     }
 

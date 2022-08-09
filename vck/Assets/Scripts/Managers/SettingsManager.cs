@@ -38,7 +38,7 @@ public class SettingsManager : MonoBehaviour
         sfxVol.onValueChanged.AddListener(SFXChanged);
 
         lighting = GameObject.FindObjectOfType<LightingController>();
-        brightnessSlider.value = 1;
+        brightnessSlider.value = lighting.GetLightIntensity();
         brightnessSlider.onValueChanged.AddListener(lighting.ChangeLightIntensity);
 
         backBtn.onClick.AddListener(ToggleTime);

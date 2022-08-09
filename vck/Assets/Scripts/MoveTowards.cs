@@ -7,6 +7,8 @@ public class MoveTowards : MonoBehaviour
 {
     public float speed = 1f;
     public float arrivalDistance = 0.5f;
+    public float boostDist = 4f;
+    public float boostSpeed = 1f;
     public float moveDelay = 0.25f;
 
     public UnityEvent destinationReached;
@@ -31,7 +33,8 @@ public class MoveTowards : MonoBehaviour
     {
         if (target != null)
         {
-            if (Vector3.Distance(target.position, transform.position) < arrivalDistance && !pause)
+            float distToTarget = Vector3.Distance(target.position, transform.position);
+            if (distToTarget < arrivalDistance && !pause)
             {
                 Pause();
                 destinationReached.Invoke();
@@ -56,6 +59,8 @@ public class MoveTowards : MonoBehaviour
                 {
                     transform.localScale = originalScale;
                 }
+                if (distToTarget > boostDist)
+                    dir *= boostSpeed;
                 //rb.AddForce(dir);
                 //transform.position = Vector3.MoveTowards(transform.position, target.position, Time.deltaTime * speed);
                 transform.Translate(dir * Time.deltaTime);
